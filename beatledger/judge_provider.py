@@ -65,10 +65,11 @@ class JudgeSettings:
     response_format: str = "schema"
     timeout_seconds: float = 45
     max_output_tokens: int = 500
-    temperature: float = 0
+    temperature: float | None = 0
     allow_remote: bool = False
     input_usd_per_million: float | None = None
     output_usd_per_million: float | None = None
+    use_max_completion_tokens: bool = False
 
     def __post_init__(self) -> None:
         url = urlsplit(self.base_url)
@@ -89,7 +90,9 @@ class JudgeSettings:
             raise ValueError("BEATLEDGER_RESPONSE_FORMAT must be schema, json or prompt.")
         if not math.isfinite(self.timeout_seconds) or self.timeout_seconds <= 0 or self.max_output_tokens < 1:
             raise ValueError("Judge timeout and output token limit must be positive.")
-        if not math.isfinite(self.temperature) or not 0 <= self.temperature <= 2:
+        if self.temperature is not None and (
+            not math.isfinite(self.temperature) or not 0 <= self.temperature <= 2
+        ):
             raise ValueError("Judge temperature must be between 0 and 2.")
         rates = (self.input_usd_per_million, self.output_usd_per_million)
         if (rates[0] is None) != (rates[1] is None):
@@ -162,10 +165,12 @@ class ChatCompletionsProvider:
         payload: dict = {
             "model": settings.model,
             "messages": messages,
-            "temperature": settings.temperature,
-            "max_tokens": settings.max_output_tokens,
             "stream": False,
         }
+        token_limit = "max_completion_tokens" if settings.use_max_completion_tokens else "max_tokens"
+        payload[token_limit] = settings.max_output_tokens
+        if settings.temperature is not None:
+            payload["temperature"] = settings.temperature
         if settings.response_format == "schema":
             payload["response_format"] = {
                 "type": "json_schema",

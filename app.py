@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import os
+import re
 import time
 from html import escape
 from pathlib import Path
@@ -23,6 +24,13 @@ from run_batch import BatchAnalysis, analyze_pack, json_document, ranked_csv, ra
 ROOT = Path(__file__).resolve().parent
 MODEL_SAMPLE_LIMIT = 12
 HOSTED_SAMPLE_LIMIT = 4
+OFFLINE_JUDGE = "Offline baseline"
+HOSTED_PROVIDERS = {
+    "Groq": ("https://api.groq.com/openai/v1", "openai/gpt-oss-20b"),
+    "Google Gemini": ("https://generativelanguage.googleapis.com/v1beta/openai", "gemini-3.5-flash-lite"),
+    "OpenAI": ("https://api.openai.com/v1", "gpt-4.1-mini"),
+    "OpenRouter": ("https://openrouter.ai/api/v1", "openrouter/free"),
+}
 REVIEW_STATUS = {"pending": "Pending", "approved": "Approved", "rejected": "Rejected"}
 FLAGS = {
     "rushed_dialogue": "Dialogue may feel rushed",
@@ -72,13 +80,9 @@ def _install_run(analysis: BatchAnalysis, source: str, saved: bool) -> None:
     st.session_state.pop("feedback", None)
 
 
-def _run_sources(sources: list[tuple[str, bytes]], source: str, model: bool, saved: bool) -> None:
-    settings = None
-    if model:
-        try:
-            settings = JudgeSettings.from_environment()
-        except ValueError as exc:
-            st.warning(f"Local judge configuration is unavailable. {exc} Running the baseline.")
+def _run_sources(
+    sources: list[tuple[str, bytes]], source: str, *, settings: JudgeSettings | None = None, saved: bool = False,
+) -> None:
     started = time.perf_counter()
     parsed = parse_pack(sources)
     run = analyze_pack(
@@ -108,9 +112,52 @@ def _run_hosted_sample() -> None:
             raise ValueError("Hosted judging requires a remote HTTPS model and key.")
     except ValueError:
         st.warning("Live sample judging is unavailable. Showing the baseline. You can also open the saved model run.")
-        _run_sources(sample_sources(ROOT), "Bundled sample", False, False)
+        _run_sources(sample_sources(ROOT), "Bundled sample")
     else:
         _install_run(_hosted_sample(settings), "Bundled sample", False)
+
+
+def _save_session_key(provider: str, field: str) -> None:
+    api_key = st.session_state.get(field, "").strip()
+    st.session_state[field] = ""
+    if not api_key or not all(33 <= ord(char) <= 126 for char in api_key):
+        st.session_state.judge_key_error = provider
+        return
+    st.session_state.judge_api_keys[provider] = api_key
+    st.session_state.pop("judge_key_error", None)
+
+
+def _hosted_judge_controls() -> tuple[str, JudgeSettings | None]:
+    provider = st.selectbox("AI judge", (OFFLINE_JUDGE, *HOSTED_PROVIDERS), key="judge_provider")
+    if provider == OFFLINE_JUDGE:
+        return provider, None
+
+    base_url, default_model = HOSTED_PROVIDERS[provider]
+    model = st.text_input("Model ID", default_model, max_chars=160, key=f"judge_model_{provider}").strip()
+    api_keys = st.session_state.setdefault("judge_api_keys", {})
+    field = f"judge_key_{provider}"
+    with st.form(f"judge_credentials_{provider}", border=False, enter_to_submit=False):
+        st.text_input("API key", type="password", key=field, max_chars=1024)
+        st.form_submit_button("Save key for this session", on_click=_save_session_key, args=(provider, field))
+    if st.session_state.get("judge_key_error") == provider:
+        st.warning("Enter a key with no spaces or line breaks.")
+    if provider in api_keys and st.button("Remove saved key", key=f"remove_key_{provider}"):
+        del api_keys[provider]
+    api_key = api_keys.get(provider)
+    if not api_key:
+        st.caption("Save an API key to enable AI analysis.")
+        return provider, None
+
+    st.caption(f"{provider} key saved for this session. AI analysis sends excerpts from up to "
+               f"{MODEL_SAMPLE_LIMIT} cuts to {provider} and may use your API credits.")
+    if model == api_key or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]*", model):
+        st.warning("Enter a valid model ID for this provider.")
+        return provider, None
+    return provider, JudgeSettings(
+        base_url=base_url, model=model, api_key=api_key, response_format="json", temperature=None,
+        timeout_seconds=25, max_output_tokens=2048, allow_remote=True,
+        use_max_completion_tokens=provider in {"OpenAI", "Groq"},
+    )
 
 
 def _source_controls() -> None:
@@ -122,12 +169,15 @@ def _source_controls() -> None:
         if choice == "Upload files":
             uploads = st.file_uploader("Episode screenplays", type=["txt"], accept_multiple_files=True, key="uploads")
             if hosted:
-                st.caption("Upload only scripts you can share with this deployment. Uploads use the offline baseline.")
+                st.caption("Upload only scripts you have permission to share.")
         else:
             st.caption("Three synthetic episodes with a recap and a silent action sequence.")
-        judge = False
-        if not hosted:
-            judge = st.checkbox(
+        provider, settings = OFFLINE_JUDGE, None
+        local_judge = False
+        if hosted:
+            provider, settings = _hosted_judge_controls()
+        else:
+            local_judge = st.checkbox(
                 "Use local model judge",
                 help="Requires a local model server. Judges up to 12 candidate cuts in this run.",
                 key="enable_judge",
@@ -135,13 +185,14 @@ def _source_controls() -> None:
         if st.session_state.get("decisions") or st.session_state.get("revisions"):
             st.caption("Export your review decisions before starting another run.")
         run = st.button(
-            "Run analysis", type="primary", width="stretch",
-            disabled=choice == "Upload files" and not uploads, key="run_analysis",
+            "Run AI analysis" if provider != OFFLINE_JUDGE else "Run analysis", type="primary", width="stretch",
+            disabled=(choice == "Upload files" and not uploads) or (provider != OFFLINE_JUDGE and settings is None),
+            key="run_analysis",
         )
         saved = choice == "Bundled sample" and (ROOT / SAVED_SAMPLE).is_file() and st.button(
             "Open saved model run", width="stretch", key="saved_sample",
         )
-        hosted_judge = hosted and choice == "Bundled sample" and st.button(
+        hosted_judge = hosted and provider == OFFLINE_JUDGE and choice == "Bundled sample" and st.button(
             "Judge sample live", width="stretch", key="hosted_sample",
         )
         if "analysis" not in st.session_state or run or saved or hosted_judge:
@@ -150,10 +201,17 @@ def _source_controls() -> None:
                 try:
                     if hosted_judge:
                         _run_hosted_sample()
-                    elif not run or choice == "Bundled sample":
-                        _run_sources(sample_sources(ROOT), "Bundled sample", run and judge, saved)
                     else:
-                        _run_sources([(item.name, item.getvalue()) for item in uploads], "Uploaded screenplays", judge, False)
+                        if run and local_judge:
+                            try:
+                                settings = JudgeSettings.from_environment()
+                            except ValueError as exc:
+                                st.warning(f"Local judge configuration is unavailable. {exc} Running the baseline.")
+                        if run and choice == "Upload files":
+                            sources = [(item.name, item.getvalue()) for item in uploads]
+                            _run_sources(sources, "Uploaded screenplays", settings=settings)
+                        else:
+                            _run_sources(sample_sources(ROOT), "Bundled sample", settings=settings if run else None, saved=saved)
                 except (OSError, KeyError, ValueError) as exc:
                     st.error(f"Could not load this run. {exc}")
 
@@ -175,7 +233,15 @@ def _run_header(analysis: BatchAnalysis) -> None:
     )):
         column.metric(label, value, border=True)
     if judge.get("selected", 0) and not judge.get("used_for_ranking", 0):
-        st.warning("The model returned no usable judgments. Review the baseline or open the saved sample.")
+        errors = {item["error"] for item in judge.get("evaluations", [])}
+        if errors & {"http_401", "http_403"}:
+            st.warning("The provider rejected access. Check the API key and model permissions. Showing the baseline.")
+        elif errors & {"http_402", "http_429"}:
+            st.warning("The provider reported a billing or rate limit. Check your API account. Showing the baseline.")
+        elif errors & {"http_400", "http_404", "http_422"}:
+            st.warning("The provider rejected the request. Check that the model ID supports chat and JSON mode. Showing the baseline.")
+        else:
+            st.warning("The model returned no usable judgments. Review the baseline or open the saved sample.")
 
 
 def _tension_display(record: dict) -> str:

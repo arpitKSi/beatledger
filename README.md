@@ -4,7 +4,7 @@ BeatLedger turns timestamped microdrama screenplays into ranked 20–60 second p
 
 ## Try it
 
-Run the Workbench locally with Python 3.11 or newer. The same app can run on Streamlit Community Cloud.
+Open the [hosted Streamlit app](https://beatledger.streamlit.app/), or run the same app locally with Python 3.11 or newer.
 
 ```sh
 python -m venv .venv
@@ -16,6 +16,7 @@ python -m streamlit run app.py --server.address 127.0.0.1
 - **Bundled sample** runs three synthetic episodes through the full offline pipeline. The sample includes a stitch that skips a recap and a silent cut that requires footage confirmation.
 - **Open saved model run** shows nine real local-model judgments on those same synthetic scripts. No API key is needed.
 - **Upload files** accepts UTF-8 `.txt` screenplays. Use scripts you can share with the deployment. [Screenplay format example](tests/fixtures/episode-017.txt)
+- In the hosted app, choose Groq, Google Gemini, OpenAI or OpenRouter under **AI judge**, save a provider key for the session, then click **Run AI analysis**. You can change the model while reusing the key. The provider receives excerpts from up to 12 cuts per run. [Provider settings](docs/DEPLOYMENT.md#use-your-own-api-key)
 - Inspect a cut, filter the ranked list, verify a trim, or record an approval or rejection. Download ranked CSV and JSON, run audit, and review decisions. Review decisions live in the browser session.
 
 ## How cuts are selected

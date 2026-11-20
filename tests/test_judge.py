@@ -233,6 +233,22 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual(request.full_url, "http://127.0.0.1:11434/v1/chat/completions")
         self.assertEqual(json.loads(request.data)["response_format"]["type"], "json_schema")
 
+    def test_session_provider_request_keeps_the_key_in_the_authorization_header(self):
+        provider = ChatCompletionsProvider(JudgeSettings(
+            base_url="https://api.openai.com/v1", model="gpt-4.1-mini", api_key="synthetic-key",
+            response_format="json", temperature=None, allow_remote=True, use_max_completion_tokens=True,
+        ))
+        reply = b'{"choices":[{"message":{"content":"{}"},"finish_reason":"stop"}]}'
+        with patch.object(provider._opener, "open", return_value=io.BytesIO(reply)) as send:
+            self.assertEqual(provider.complete([], {}).content, "{}")
+        request = send.call_args.args[0]
+        self.assertEqual(request.full_url, "https://api.openai.com/v1/chat/completions")
+        self.assertEqual(request.get_header("Authorization"), "Bearer synthetic-key")
+        self.assertEqual(json.loads(request.data), {
+            "model": "gpt-4.1-mini", "messages": [], "stream": False, "max_completion_tokens": 500,
+            "response_format": {"type": "json_object"},
+        })
+
     def test_repeated_timeout_records_two_unknown_usage_attempts(self):
         provider = ChatCompletionsProvider(JudgeSettings(timeout_seconds=1))
         with patch.object(provider._opener, "open", side_effect=TimeoutError):
