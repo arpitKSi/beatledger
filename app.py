@@ -8,12 +8,14 @@ import re
 import time
 from html import escape
 from pathlib import Path
+from statistics import median
 
 import streamlit as st
 
 from beatledger.judge_provider import JudgeSettings
 from beatledger.parser import format_clock, parse_pack
-from beatledger.verifier import CutError, SegmentSpec, Timeline
+from beatledger.ranking import BaselineScorer
+from beatledger.verifier import CutError, SegmentSpec, Timeline, verify_cut
 from beatledger.workbench import (
     SAVED_SAMPLE, UNJUDGED, ReviewCut, decision_export, filter_records, load_saved_sample,
     original_cut, review_decision, sample_sources, trim_cut,
@@ -336,6 +338,8 @@ def _cut_details(cut: ReviewCut, record: dict) -> None:
             f"{format_clock(segment.start_cs)} → {format_clock(segment.end_cs)}  "
             f"({segment.duration_cs / 100:.2f} s)"
         )
+    with st.expander("Cut metrics"):
+        _cut_metrics(cut, record)
     with st.expander("Source evidence", expanded=True):
         _evidence_panel("Opening hook", cut.hook, None if cut.revised else record["hook_summary"])
         _evidence_panel("Ending beat", cut.cliffhanger, None if cut.revised else record["cliffhanger_summary"])
@@ -346,6 +350,41 @@ def _cut_details(cut: ReviewCut, record: dict) -> None:
     if shown_flags:
         st.caption("Review flags")
         st.markdown("\n".join(f"- {flag}" for flag in shown_flags))
+
+
+def _cut_metrics(cut: ReviewCut, record: dict) -> None:
+    revised_score = None
+    if cut.revised:
+        candidate = BaselineScorer(beat for part in cut.segments for beat in part.beats).score(cut.segments)
+        revised_score = candidate.score if candidate else None
+        st.caption("The edited range has fresh baseline metrics. Reranking and model judgments apply to the original cut.")
+    baseline = record["baseline_criteria"]
+    baseline_total = 0.35 * baseline["hook"] + 0.30 * baseline["cliffhanger"] + 0.25 * baseline["clarity"] + 0.10 * record["drama_score"]
+    original = (
+        ("Overall score", f'{record["baseline_score"]:.2f}', f'{record["score"]:.2f}',
+         f"{revised_score.total:.2f}" if revised_score else "—"),
+        ("Opening hook · 35%", baseline["hook"], record["hook_score"], revised_score.hook if revised_score else "—"),
+        ("Cliffhanger · 30%", baseline["cliffhanger"], record["cliffhanger_score"], revised_score.cliffhanger if revised_score else "—"),
+        ("Standalone clarity · 25%", baseline["clarity"], record["clarity_score"], revised_score.clarity if revised_score else "—"),
+        ("Drama · 10%", record["drama_score"], record["drama_score"], revised_score.drama if revised_score else "—"),
+        ("Pacing deduction", f'{baseline_total - record["baseline_score"]:.2f}', f'{record["pacing_penalty"]:.2f}',
+         f"{revised_score.pacing_penalty:.2f}" if revised_score else "—"),
+        ("Tension change (opening → ending)", "—", _tension_display(record), "—"),
+        ("Tension bonus", "—", f'{record["tension_bonus"]:+.2f}', "—"),
+        ("Rank", f'#{record["baseline_rank"]}', f'#{record["rank"]}', "—"),
+    )
+    rows = []
+    for metric, rule_based, ranked, edited in original:
+        row = {"Metric": metric, "Original baseline": str(rule_based), "Ranked cut": str(ranked)}
+        if cut.revised:
+            row["Edited baseline"] = str(edited)
+        rows.append(row)
+    st.dataframe(rows, hide_index=True, width="stretch", height=min(360, 42 + 36 * len(rows)))
+    pacing = cut.pacing
+    st.caption(f"Active range contains {pacing.spoken_words} spoken words, {pacing.beat_count} beats, "
+               f"and {pacing.non_dialogue_count} non-dialogue beats.")
+    if not cut.revised and record["join_coherent"] is not None:
+        st.caption("Model assessment of stitch continuity: " + ("coherent" if record["join_coherent"] else "review needed"))
 
 
 def _save_review(record: dict, cut: ReviewCut, serial: int) -> None:
@@ -376,29 +415,63 @@ def _save_review(record: dict, cut: ReviewCut, serial: int) -> None:
                 st.rerun()
 
 
+def _trim_slider(cut: ReviewCut, timelines: dict[int, Timeline], version: str) -> tuple[SegmentSpec, ...]:
+    first, last = cut.segments[0], cut.segments[-1]
+    first_episode, last_episode = first.spec.episode_number, last.spec.episode_number
+    stitched = len(cut.segments) == 2
+    move_join = stitched and st.radio(
+        "Stitch adjustment", ("Cut edges", "Stitch join"), horizontal=True, key=f"trim-mode:{version}",
+    ) == "Stitch join"
+    if move_join:
+        left = {time: beat for time, beat in timelines[first_episode].ends.items() if time > first.start_cs}
+        right = {time: beat for time, beat in timelines[last_episode].starts.items() if time < last.end_cs}
+        left[first.end_cs], right[last.start_cs] = first.spec.end_beat_id, last.spec.start_beat_id
+        current_start, current_end = first.end_cs, last.start_cs
+    else:
+        left = {time: beat for time, beat in timelines[first_episode].starts.items() if not stitched or time < first.end_cs}
+        right = {time: beat for time, beat in timelines[last_episode].ends.items() if not stitched or time > last.start_cs}
+        left[first.start_cs], right[last.end_cs] = first.spec.start_beat_id, last.spec.end_beat_id
+        current_start, current_end = first.start_cs, last.end_cs
+
+    # Give each episode its own half of a stitched slider so the handles can share one control.
+    last_left = max(left)
+    offset = last_left + 1 - min(right) if stitched else 0
+    start, end = st.select_slider(
+        "Cut range" if not move_join else "Join range",
+        options=sorted(left.keys() | {time + offset for time in right}),
+        value=(current_start, current_end + offset), key=f"trim-range:{version}:{move_join}",
+        format_func=lambda time: format_clock(time - offset if stitched and time > last_left else time),
+        help="Move both handles between screenplay beats. The preview shows the exact source timecodes.",
+    )
+    start_id = left[min(left, key=lambda time: (abs(time - start), time))]
+    end_id = right[min(right, key=lambda time: (abs(time - (end - offset)), time))]
+    if move_join:
+        return (SegmentSpec(first_episode, first.spec.start_beat_id, start_id),
+                SegmentSpec(last_episode, end_id, last.spec.end_beat_id))
+    if stitched:
+        return (SegmentSpec(first_episode, start_id, first.spec.end_beat_id),
+                SegmentSpec(last_episode, last.spec.start_beat_id, end_id))
+    return (SegmentSpec(first_episode, start_id, end_id),)
+
+
 def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: int) -> None:
     candidate_id = record["candidate_id"]
     timelines = st.session_state.timelines
     version = f"{serial}:{candidate_id}:{cut.version}"
     with st.expander("Adjust cut"):
-        with st.form(f"trim:{version}"):
-            specs = []
-            for index, segment in enumerate(cut.segments, 1):
-                number = segment.spec.episode_number
-                source = timelines[number]
-                start_times, end_times = sorted(source.starts), sorted(source.ends)
-                left, right = st.columns(2)
-                start = left.selectbox(
-                    f"Segment {index} start", start_times, index=start_times.index(segment.start_cs),
-                    format_func=format_clock, key=f"start:{version}:{index}",
-                )
-                end = right.selectbox(
-                    f"Segment {index} end", end_times, index=end_times.index(segment.end_cs),
-                    format_func=format_clock, key=f"end:{version}:{index}",
-                )
-                specs.append(SegmentSpec(number, source.starts[start], source.ends[end]))
-            apply = st.form_submit_button("Verify and apply trim")
-            restore = st.form_submit_button("Restore original cut") if cut.revised else False
+        specs = _trim_slider(cut, timelines, version)
+        try:
+            preview = verify_cut(timelines, specs)
+        except CutError as exc:
+            preview = ()
+            st.warning(str(exc))
+        else:
+            duration = sum(part.duration_cs for part in preview)
+            ranges = " · ".join(f"Ep {part.spec.episode_number} {format_clock(part.start_cs)}–{format_clock(part.end_cs)}"
+                                for part in preview)
+            st.caption(f"Preview · {duration / 100:.2f} s · {ranges}")
+        apply = st.button("Verify and apply trim", disabled=not preview, key=f"apply-trim:{version}")
+        restore = cut.revised and st.button("Restore original cut", key=f"restore-trim:{version}")
 
         if not (apply or restore):
             return
@@ -411,7 +484,7 @@ def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: i
                      if list(entry["episodes"]) == record["episodes"] and entry["recap"]["status"] == "confirmed"),
                     None,
                 )
-                updated = trim_cut(record, tuple(specs), timelines, resume)
+                updated = trim_cut(record, specs, timelines, resume)
         except CutError as exc:
             st.error(str(exc))
             return
@@ -483,8 +556,8 @@ def _review_tab(analysis: BatchAnalysis) -> None:
     with left:
         _cut_details(cut, record)
     with right:
-        _save_review(record, cut, serial)
         _adjust_cut(analysis, record, cut, serial)
+        _save_review(record, cut, serial)
 
 
 def _audit_tab(analysis: BatchAnalysis) -> None:
@@ -526,6 +599,84 @@ def _audit_tab(analysis: BatchAnalysis) -> None:
                 st.text(f'{item["candidate_id"]} · {item["error"]}')
 
 
+def _metric_table(rows: tuple[tuple[str, object], ...]) -> None:
+    st.dataframe(
+        [{"Metric": name, "Value": str(value)} for name, value in rows],
+        hide_index=True, width="stretch", height=38 + 35 * len(rows),
+    )
+
+
+def _metrics_tab(analysis: BatchAnalysis) -> None:
+    ledger, records = analysis.ledger, analysis.records
+    inputs, counts = ledger["inputs"]["summary"], ledger["counts"]
+    judge, usage, timing = ledger.get("judge", {}), ledger["model_usage"], ledger["latency_seconds"]
+    judged = [record for record in records if record["judge_status"] == "validated"]
+    decisions = [item.status for item in st.session_state.decisions.values()]
+    seconds = lambda value: f"{value:,.3f} s" if value is not None else "—"
+    cost = usage["api_cost_usd"]
+
+    st.subheader("Run metrics")
+    st.caption("Measured on the active run. The bundled sample and uploaded screenplays have separate metrics.")
+    left, right = st.columns(2)
+    with left:
+        st.markdown("#### Coverage and safety")
+        _metric_table((
+            ("Files parsed / supplied", f'{inputs["parsed_files"]} / {inputs["files"]}'),
+            ("Episodes with a verified cut", len({episode for record in records for episode in record["episodes"]})),
+            ("Scenes / screenplay beats", f'{inputs["scenes"]:,} / {inputs["beats"]:,}'),
+            ("Input warnings / errors", f'{inputs["warnings"]} / {inputs["errors"]}'),
+            ("Continuous / stitched cuts", f'{counts["continuous"]} / {counts["stitched"]}'),
+            ("Eligible continuous windows", f'{sum(row["eligible_windows"] for row in ledger["continuous_search"]):,}'),
+            ("Episode pairs checked for recaps", len(ledger["stitch_search"])),
+            ("Source ranges / evidence citations", f'{sum(len(record["segments"]) for record in records)} / {2 * len(records)}'),
+            ("Duration range", f'{min(row["duration_seconds"] for row in records):.2f}–'
+             f'{max(row["duration_seconds"] for row in records):.2f} s' if records else "—"),
+            ("Median dialogue words per second", f'{median(record["dialogue_wps"] for record in records):.2f}' if records else "—"),
+            ("Original cuts on review hold", counts["review_hold"]),
+            ("Cuts requiring footage confirmation", sum(record["footage_verification_required"] for record in records)),
+            ("Session edits / approvals / rejections", f'{len(st.session_state.revisions)} / '
+             f'{decisions.count("approved")} / {decisions.count("rejected")}'),
+        ))
+    with right:
+        st.markdown("#### Model usage and timing")
+        _metric_table((
+            ("Model", judge.get("model", "Offline baseline")),
+            ("Selected / validated / used", f'{judge.get("selected", 0)} / {judge.get("validated", 0)} / {len(judged)}'),
+            ("Requests / missing token usage", f'{usage["requests"]} / {usage.get("requests_with_unreported_usage", 0)}'),
+            ("Input / output tokens", f'{usage["input_tokens"]:,} / {usage["output_tokens"]:,}'),
+            ("API cost", f"${cost:,.8g}" if cost is not None else "Unknown"),
+            ("Median model request", seconds(usage.get("median_request_seconds"))),
+            ("Read and parse", seconds(timing.get("read_and_parse"))),
+            ("Candidate search", seconds(timing.get("candidate_search"))),
+            ("Model judging", seconds(timing.get("model_judging"))),
+            ("Total through verified records", seconds(timing.get("read_through_verified_records"))),
+        ))
+    st.markdown("#### Baseline versus model")
+    if judged:
+        _metric_table((
+            ("Judged cuts compared", len(judged)),
+            ("Higher / unchanged / lower scores", f'{sum(row["score"] > row["baseline_score"] for row in judged)} / '
+             f'{sum(row["score"] == row["baseline_score"] for row in judged)} / '
+             f'{sum(row["score"] < row["baseline_score"] for row in judged)}'),
+            ("Moved up / unchanged / moved down in rank", f'{sum(row["rank"] < row["baseline_rank"] for row in judged)} / '
+             f'{sum(row["rank"] == row["baseline_rank"] for row in judged)} / '
+             f'{sum(row["rank"] > row["baseline_rank"] for row in judged)}'),
+            ("Model judgments on stitch-ending hold", sum("stitch_ending_review" in row["review_flags"] for row in judged)),
+        ))
+    else:
+        st.caption("Open the saved model run or run AI analysis to see how model judging changes scores and ranks.")
+    st.markdown("#### How the workflow improves the shortlist")
+    st.markdown(
+        "- **Verify before ranking.** Screenplay beat IDs anchor every edge and citation. "
+        "The verifier enforces dialogue-safe boundaries and the 20–60 second duration limit.\n"
+        "- **Reduce duplicate openings.** The search removes near-duplicate cuts and checks stitched episodes for recaps.\n"
+        "- **Score the story against source evidence.** Ranking weights hook 35%, cliffhanger 30%, clarity 25%, and drama 10%. "
+        "Pacing can deduct points, and rising model-rated tension can add up to 0.35 points.\n"
+        "- **Put uncertain cuts in front of an editor.** Stitch disagreements trigger a review hold. "
+        "Silent cuts require footage confirmation, and an applied trim resets the previous decision."
+    )
+
+
 def main() -> None:
     st.set_page_config(page_title="BeatLedger Editor Workbench", layout="wide", initial_sidebar_state="auto")
     _render_title()
@@ -534,9 +685,11 @@ def main() -> None:
         return
     analysis = st.session_state.analysis
     _run_header(analysis)
-    review, audit = st.tabs(("Review cuts", "Run audit"))
+    review, metrics, audit = st.tabs(("Review cuts", "Metrics", "Run audit"))
     with review:
         _review_tab(analysis)
+    with metrics:
+        _metrics_tab(analysis)
     with audit:
         _audit_tab(analysis)
 

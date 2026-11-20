@@ -46,6 +46,9 @@ class WorkbenchAppTests(unittest.TestCase):
         self.assertEqual(ui.metric[2].value, "9")
         self.assertIn("+3 (5→8)", set(ui.dataframe[0].value["Tension change"]))
         self.assertTrue(any(item.value.startswith("Baseline rank #") for item in ui.caption))
+        tables = [item.value for item in ui.dataframe if "Metric" in item.value.columns]
+        model_usage = next(table for table in tables if "Model" in set(table["Metric"]))
+        self.assertEqual(model_usage.loc[model_usage["Metric"] == "Selected / validated / used", "Value"].item(), "9 / 9 / 9")
 
         ui.multiselect(key="archetype-2").set_value(["Secret Reveal"])
         ui.slider(key="tension-2").set_value((1, 10))
@@ -73,12 +76,14 @@ class WorkbenchAppTests(unittest.TestCase):
         self.assertEqual(ui.session_state.decisions[candidate_id].status, "approved")
         self.assertEqual(ui.metric[3].value, "1")
 
-        next(item for item in ui.selectbox if item.label == "Segment 1 end").set_value(180)
-        button(ui, "Verify and apply trim").click().run()
-        self.assertTrue(any("20 to 60 seconds" in error.value for error in ui.error))
+        self.assertEqual(len(ui.select_slider), 1)
+        ui.select_slider[0].set_value((0, 180)).run()
+        self.assertTrue(any("20 to 60 seconds" in item.value for item in ui.warning))
+        self.assertTrue(button(ui, "Verify and apply trim").disabled)
         self.assertEqual(ui.session_state.decisions[candidate_id].status, "approved")
 
-        next(item for item in ui.selectbox if item.label == "Segment 1 end").set_value(2420)
+        ui.select_slider[0].set_value((0, 2420)).run()
+        self.assertTrue(any("Preview · 24.20 s" in item.value for item in ui.caption))
         button(ui, "Verify and apply trim").click().run()
         self.assertFalse(ui.exception)
         self.assertNotIn(candidate_id, ui.session_state.decisions)
@@ -92,6 +97,25 @@ class WorkbenchAppTests(unittest.TestCase):
         button(ui, "Save decision").click().run()
         self.assertFalse(ui.exception)
         self.assertEqual(ui.session_state.decisions[candidate_id].status, "rejected")
+
+    def test_stitch_reuses_one_slider_for_outer_edges_and_join(self):
+        ui = self.app
+        candidate_id = "E101:1200-4000+E102:500-1300"
+        ui.selectbox(key="inspect-1").set_value(candidate_id).run()
+        self.assertEqual(len(ui.select_slider), 1)
+        ui.select_slider[0].set_value((2100, 5221)).run()
+        button(ui, "Verify and apply trim").click().run()
+        revised = ui.session_state.revisions[candidate_id]
+        self.assertEqual([(part.start_cs, part.end_cs) for part in revised.segments], [(2100, 4000), (500, 2200)])
+        button(ui, "Restore original cut").click().run()
+
+        next(item for item in ui.radio if item.label == "Stitch adjustment").set_value("Stitch join").run()
+        self.assertEqual(len(ui.select_slider), 1)
+        ui.select_slider[0].set_value((3600, 4001)).run()
+        button(ui, "Verify and apply trim").click().run()
+        revised = ui.session_state.revisions[candidate_id]
+        self.assertEqual([(part.start_cs, part.end_cs) for part in revised.segments], [(1200, 3600), (0, 1300)])
+        self.assertIn("recap_review_required", revised.flags)
 
     def test_hosted_judge_falls_back_and_is_hidden_when_uploading(self):
         with patch.dict(os.environ, {
