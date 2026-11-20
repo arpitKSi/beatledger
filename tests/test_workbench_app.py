@@ -103,6 +103,11 @@ class WorkbenchAppTests(unittest.TestCase):
         candidate_id = "E101:1200-4000+E102:500-1300"
         ui.selectbox(key="inspect-1").set_value(candidate_id).run()
         self.assertEqual(len(ui.select_slider), 1)
+        excerpt = next(item.proto.body for item in ui.get("html") if 'aria-label="Screenplay beats"' in item.proto.body)
+        self.assertIn("Episode 101 · 00:12.00–00:40.00", excerpt)
+        second_episode = excerpt.split("Episode 102", 1)[1]
+        self.assertIn("My brother took a copy of the key!", second_episode)
+        self.assertNotIn("You must open the vault tonight.", second_episode)
         ui.select_slider[0].set_value((2100, 5221)).run()
         button(ui, "Verify and apply trim").click().run()
         revised = ui.session_state.revisions[candidate_id]
@@ -116,6 +121,29 @@ class WorkbenchAppTests(unittest.TestCase):
         revised = ui.session_state.revisions[candidate_id]
         self.assertEqual([(part.start_cs, part.end_cs) for part in revised.segments], [(1200, 3600), (0, 1300)])
         self.assertIn("recap_review_required", revised.flags)
+
+    def test_full_excerpt_shows_all_beats_in_the_active_preview(self):
+        ui = self.app
+        ui.selectbox(key="inspect-1").set_value("E103:0-2050").run()
+
+        def excerpt():
+            return next(item.proto.body for item in ui.get("html") if 'aria-label="Screenplay beats"' in item.proto.body)
+
+        saved = excerpt()
+        self.assertIn("An iron gate drops between Nora and the exit.", saved)
+        self.assertIn("Wide shot of Nora jumping backward as the gate lands.", saved)
+        self.assertIn("INT. VAULT HALL - NIGHT", saved)
+        self.assertIn("E103-B001 · line", saved)
+        self.assertNotIn("The wire draws a latch open", saved)
+
+        ui.select_slider[0].set_value((0, 2420)).run()
+        self.assertTrue(any(item.value.startswith("Trim preview · 24.20 s") for item in ui.caption))
+        self.assertIn("The wire draws a latch open somewhere behind her.", excerpt())
+        self.assertNotIn("An unfamiliar hand reaches", excerpt())
+        self.assertFalse(ui.session_state.revisions)
+        button(ui, "Verify and apply trim").click().run()
+        self.assertTrue(any(item.value.startswith("Saved cut · 24.20 s") for item in ui.caption))
+        self.assertIn("The wire draws a latch open somewhere behind her.", excerpt())
 
     def test_hosted_judge_falls_back_and_is_hidden_when_uploading(self):
         with patch.dict(os.environ, {

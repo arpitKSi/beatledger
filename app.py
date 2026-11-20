@@ -13,9 +13,9 @@ from statistics import median
 import streamlit as st
 
 from beatledger.judge_provider import JudgeSettings
-from beatledger.parser import format_clock, parse_pack
+from beatledger.parser import Episode, format_clock, parse_pack
 from beatledger.ranking import BaselineScorer
-from beatledger.verifier import CutError, SegmentSpec, Timeline, verify_cut
+from beatledger.verifier import CutError, Segment, SegmentSpec, Timeline, cut_beat_kind, verify_cut
 from beatledger.workbench import (
     SAVED_SAMPLE, UNJUDGED, ReviewCut, decision_export, filter_records, load_saved_sample,
     original_cut, review_decision, sample_sources, trim_cut,
@@ -59,6 +59,14 @@ def _render_title() -> None:
             .bl-header p { margin: .25rem 0 0; color: #d8efea; font-size: 1rem; }
             .bl-evidence { line-height: 1.55; font-size: .96rem; margin: .15rem 0 .7rem;
               white-space: pre-wrap; overflow-wrap: anywhere; }
+            .bl-excerpt { max-height: 29rem; overflow-y: auto; padding-right: .6rem; }
+            .bl-excerpt h4 { padding: 0; margin: 0 0 .25rem; font-size: 1rem; }
+            .bl-excerpt h5 { padding: 0; margin: .6rem 0 .3rem; font-size: .91rem; }
+            .bl-excerpt section + section { border-top: 2px solid #b9cfcb; padding-top: .85rem; }
+            .bl-excerpt article { border-top: 1px solid #d6e3e1; padding: .5rem 0; }
+            .bl-excerpt .bl-meta { color: #465f62; font-size: .82rem; margin: 0 0 .25rem;
+              overflow-wrap: anywhere; }
+            .bl-excerpt .bl-evidence { margin: 0; }
             @media (max-width: 640px) {
                 .st-key-run-metrics [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: .65rem; }
                 .st-key-run-metrics [data-testid="stColumn"] { flex: 1 1 45%; min-width: 0; }
@@ -314,7 +322,45 @@ def _evidence_panel(
         _esc_paragraph(summary)
 
 
-def _cut_details(cut: ReviewCut, record: dict) -> None:
+def _cut_excerpt(segments: tuple[Segment, ...], episodes: dict[int, Episode], *, previewing: bool) -> None:
+    with st.expander("Full cut excerpt", expanded=True):
+        duration = sum(part.duration_cs for part in segments) / 100
+        label = "Trim preview" if previewing else "Saved cut"
+        st.caption(f"{label} · {duration:.2f} s · All screenplay beats overlapping these timecodes")
+        sections = []
+        for part in segments:
+            episode = episodes[part.spec.episode_number]
+            scenes = {scene.number: scene.heading for scene in episode.scenes}
+            rows = [
+                f"<h4>Episode {episode.number} · {format_clock(part.start_cs)}–{format_clock(part.end_cs)}</h4>",
+                f'<p class="bl-meta">{escape(episode.filename)}</p>',
+            ]
+            current_scene = None
+            for beat in sorted(part.beats, key=lambda item: (item.start_cs, item.source_ordinal)):
+                if beat.scene_number is not None and beat.scene_number != current_scene:
+                    current_scene = beat.scene_number
+                    heading = scenes.get(current_scene)
+                    detail = f" · {escape(heading)}" if heading else ""
+                    rows.append(f"<h5>Scene {current_scene:02d}{detail}</h5>")
+                original = f"{format_clock(beat.start_cs)}–{format_clock(beat.end_cs)}"
+                inside_start, inside_end = max(part.start_cs, beat.start_cs), min(part.end_cs, beat.end_cs)
+                overlap = ""
+                if (inside_start, inside_end) != (beat.start_cs, beat.end_cs):
+                    overlap = (f'<p class="bl-meta">Overlaps cut edge · Inside the cut '
+                               f'{format_clock(inside_start)}–{format_clock(inside_end)}</p>')
+                kind = cut_beat_kind(beat).capitalize()
+                category = f' <span class="bl-meta">· {kind}</span>' if beat.label.casefold() != kind.casefold() else ""
+                rows.append(
+                    f'<article><strong>{escape(beat.label)}</strong>{category}'
+                    f'<p class="bl-meta">{original} · {beat.id} · line {beat.source_line}</p>'
+                    f'{overlap}<p class="bl-evidence">{escape(beat.text)}</p></article>'
+                )
+            sections.append(f"<section>{''.join(rows)}</section>")
+        st.html(f'<div class="bl-excerpt" role="region" aria-label="Screenplay beats" tabindex="0">'
+                f'{"".join(sections)}</div>')
+
+
+def _cut_details(cut: ReviewCut, record: dict, episodes: dict[int, Episode], preview: tuple[Segment, ...]) -> None:
     if cut.revised:
         st.caption("Revised cut · pacing and evidence refreshed")
     else:
@@ -338,6 +384,7 @@ def _cut_details(cut: ReviewCut, record: dict) -> None:
             f"{format_clock(segment.start_cs)} → {format_clock(segment.end_cs)}  "
             f"({segment.duration_cs / 100:.2f} s)"
         )
+    _cut_excerpt(preview or cut.segments, episodes, previewing=bool(preview))
     with st.expander("Cut metrics"):
         _cut_metrics(cut, record)
     with st.expander("Source evidence", expanded=True):
@@ -454,7 +501,7 @@ def _trim_slider(cut: ReviewCut, timelines: dict[int, Timeline], version: str) -
     return (SegmentSpec(first_episode, start_id, end_id),)
 
 
-def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: int) -> None:
+def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: int) -> tuple[Segment, ...]:
     candidate_id = record["candidate_id"]
     timelines = st.session_state.timelines
     version = f"{serial}:{candidate_id}:{cut.version}"
@@ -472,9 +519,10 @@ def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: i
             st.caption(f"Preview · {duration / 100:.2f} s · {ranges}")
         apply = st.button("Verify and apply trim", disabled=not preview, key=f"apply-trim:{version}")
         restore = cut.revised and st.button("Restore original cut", key=f"restore-trim:{version}")
+        excerpt_preview = preview if specs != tuple(part.spec for part in cut.segments) else ()
 
         if not (apply or restore):
-            return
+            return excerpt_preview
         try:
             if restore:
                 updated = original_cut(record, timelines)
@@ -487,10 +535,10 @@ def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: i
                 updated = trim_cut(record, specs, timelines, resume)
         except CutError as exc:
             st.error(str(exc))
-            return
+            return excerpt_preview
         if updated.version == cut.version:
             st.info("These are the current cut boundaries.")
-            return
+            return ()
         if updated.revised:
             st.session_state.revisions[candidate_id] = updated
         else:
@@ -498,6 +546,7 @@ def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: i
         st.session_state.decisions.pop(candidate_id, None)
         st.session_state.feedback = "Verified cut saved for a new review."
         st.rerun()
+        return ()
 
 
 def _downloads(analysis: BatchAnalysis) -> None:
@@ -553,11 +602,13 @@ def _review_tab(analysis: BatchAnalysis) -> None:
     record = records[chosen]
     cut = st.session_state.revisions.get(chosen) or original_cut(record, st.session_state.timelines)
     left, right = st.columns((1.1, 1), gap="large")
-    with left:
-        _cut_details(cut, record)
     with right:
-        _adjust_cut(analysis, record, cut, serial)
+        preview = _adjust_cut(analysis, record, cut, serial)
+        if preview:
+            st.caption("The editor decision applies to the saved range until you apply the trim.")
         _save_review(record, cut, serial)
+    with left:
+        _cut_details(cut, record, analysis.episodes, preview)
 
 
 def _audit_tab(analysis: BatchAnalysis) -> None:

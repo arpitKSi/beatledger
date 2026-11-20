@@ -18,6 +18,7 @@ python -m streamlit run app.py --server.address 127.0.0.1
 - **Upload files** accepts UTF-8 `.txt` screenplays. Use scripts you can share with the deployment. [Screenplay format example](tests/fixtures/episode-017.txt)
 - In the hosted app, choose Groq, Google Gemini, OpenAI or OpenRouter under **AI judge**, save a provider key for the session, then click **Run AI analysis**. You can change the model while reusing the key. The provider receives excerpts from up to 12 cuts per run. [Provider settings](docs/DEPLOYMENT.md#use-your-own-api-key)
 - Inspect a cut and open **Adjust cut**. Drag the two handles on the range slider, check the exact timecodes in the preview, then apply the trim. Stitched cuts use the same control for the outer edges or the join. A valid edit must keep its total duration within 20–60 seconds.
+- **Full cut excerpt** shows the screenplay beats across the selected span, including dialogue, action and production cues. It updates for a valid trim preview and shows the exact overlap when a beat crosses a cut edge. Stitched cuts show both episode sections in order.
 - Open **Cut metrics** for the ranked cut and its baseline comparison. The **Metrics** tab shows run coverage, model usage, timing, review holds, and score and rank changes. Download ranked CSV, JSON, run audit and review decisions. Review decisions live in the browser session.
 
 ## How cuts are selected
