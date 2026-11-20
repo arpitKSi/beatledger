@@ -1,0 +1,45 @@
+Episode number: Episode 17
+Episode logline: Nora finds a second key in her mailbox.
+
+**PREAMBLE:**
+Start: (00:00.00) | End: (00:01.00)
+This timing row is an example outside the script.
+
+--- SCRIPT START ---
+
+SCENE 01
+SCENE HEADING: INT. OFFICE - RECAP
+SCENE START: 00:00.00
+SCENE END: 00:15.10
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:05.12)
+The frame follows an envelope across a counter.
+
+**ACTION:**
+Start: (00:04.03) | End: (00:10.05)
+Nora opens the envelope and finds a brass key.
+
+**NORA (Quiet):**
+Start: (00:03.50) | End: (00:06.15)
+"Why are there two keys?
+Who sent the second one?"
+
+SCENE 02
+Scene heading: INT. HALLWAY - DAY
+Scene start: 00:15.10
+Scene end: 00:42.00
+
+**SFX:**
+Start: (00:15.10) | End: (00:15.40)
+A bell rings twice.
+
+**NORA:**
+Start: (00:15.10) | End: (00:17.01)
+"Did you hear that?"
+
+--- SCRIPT END ---
+
+**AFTERWORD:**
+Start: (00:45.00) | End: (00:46.00)
+Another timing row outside the script.

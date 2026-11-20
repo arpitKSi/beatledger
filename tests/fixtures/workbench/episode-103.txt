@@ -1,0 +1,42 @@
+Episode number: 103
+Episode logline: Nora finds a concealed latch before the vault door closes.
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: INT. VAULT HALL - NIGHT
+Scene start: 00:00.00
+Scene end: 00:29.70
+
+**ACTION:**
+Start: (00:00.00) | End: (00:01.80)
+An iron gate drops between Nora and the exit.
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:03.80)
+Wide shot of Nora jumping backward as the gate lands.
+
+**ACTION:**
+Start: (00:03.80) | End: (00:07.00)
+Nora turns the brass key in the wall socket.
+
+**ACTION:**
+Start: (00:08.50) | End: (00:11.50)
+A narrow shelf pivots out of the wall.
+
+**CAMERA:**
+Start: (00:13.50) | End: (00:18.00)
+The shot tracks across a row of sealed envelopes.
+
+**ACTION:**
+Start: (00:18.10) | End: (00:20.50)
+She slides one envelope outward and finds a wire attached inside.
+
+**ACTION:**
+Start: (00:22.00) | End: (00:24.20)
+The wire draws a latch open somewhere behind her.
+
+**ACTION:**
+Start: (00:26.00) | End: (00:29.70)
+An unfamiliar hand reaches through the opening toward her shoulder.
+
+--- SCRIPT END ---

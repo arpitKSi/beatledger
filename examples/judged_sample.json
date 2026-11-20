@@ -1,0 +1,1191 @@
+{
+  "records": [
+    {
+      "rank": 1,
+      "baseline_rank": 4,
+      "model_rank": 1,
+      "candidate_id": "E102:1100-3100",
+      "priority_group": "shortlist",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 5.95,
+      "baseline_score": 6.9,
+      "baseline_criteria": {
+        "hook": 7,
+        "cliffhanger": 6,
+        "clarity": 9
+      },
+      "episodes": [
+        102
+      ],
+      "segments": [
+        {
+          "episode": 102,
+          "file": "episode-102.txt",
+          "source_sha256": "1d7516c13be31baac849ab2129b5aa2370514f2572ffb035bd97726e745f9196",
+          "start": "00:11.00",
+          "end": "00:31.00",
+          "start_cs": 1100,
+          "end_cs": 3100,
+          "start_beat_id": "E102-B005",
+          "end_beat_id": "E102-B007",
+          "start_timestamp_line": 31,
+          "end_timestamp_line": 39
+        }
+      ],
+      "duration_cs": 2000,
+      "duration_seconds": 20.0,
+      "hook": {
+        "beat_id": "E102-B005",
+        "text": "He must be hiding the second letter.",
+        "source_line": 30,
+        "timestamp_line": 31,
+        "start": "00:11.00",
+        "end": "00:13.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E102-B007",
+        "text": "Why is our mother's name written here?",
+        "source_line": 38,
+        "timestamp_line": 39,
+        "start": "00:28.00",
+        "end": "00:31.00"
+      },
+      "hook_summary": "He must be hiding the second letter.",
+      "cliffhanger_summary": "Why is our mother's name written here?",
+      "rationale": "The hook reveals a concealed fact about the mother's name, creating intrigue and suspense.",
+      "hook_score": 5,
+      "cliffhanger_score": 8,
+      "clarity_score": 5,
+      "drama_score": 4,
+      "pacing_penalty": 0.0,
+      "hook_archetype": "Secret Reveal",
+      "opening_tension": 5,
+      "ending_tension": 8,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 3,
+      "tension_bonus": 0.15000000000000002,
+      "spoken_words": 14,
+      "beat_count": 3,
+      "non_dialogue_count": 1,
+      "dialogue_wps": 0.7,
+      "action_beat_ratio": 0.3333333333333333,
+      "footage_verification_required": false,
+      "review_flags": [
+        "low_criterion_score"
+      ]
+    },
+    {
+      "rank": 2,
+      "baseline_rank": 6,
+      "model_rank": 2,
+      "candidate_id": "E101:500-3150",
+      "priority_group": "shortlist",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 5.7,
+      "baseline_score": 4.65,
+      "baseline_criteria": {
+        "hook": 4,
+        "cliffhanger": 4,
+        "clarity": 7
+      },
+      "episodes": [
+        101
+      ],
+      "segments": [
+        {
+          "episode": 101,
+          "file": "episode-101.txt",
+          "source_sha256": "1d45e9451b3b104623a06dec3f79a0a2af2e0505b0c9f0d8aec5722a4fbc59b4",
+          "start": "00:05.00",
+          "end": "00:31.50",
+          "start_cs": 500,
+          "end_cs": 3150,
+          "start_beat_id": "E101-B002",
+          "end_beat_id": "E101-B005",
+          "start_timestamp_line": 14,
+          "end_timestamp_line": 26
+        }
+      ],
+      "duration_cs": 2650,
+      "duration_seconds": 26.5,
+      "hook": {
+        "beat_id": "E101-B002",
+        "text": "My sister sent this from the vault.",
+        "source_line": 13,
+        "timestamp_line": 14,
+        "start": "00:05.00",
+        "end": "00:07.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E101-B005",
+        "text": "Nora slides the brass key across the marble counter.",
+        "source_line": 25,
+        "timestamp_line": 26,
+        "start": "00:29.00",
+        "end": "00:31.50"
+      },
+      "hook_summary": "Nora's sister sent a key from the vault.",
+      "cliffhanger_summary": "Nora slides the brass key across the marble counter.",
+      "rationale": "The secret reveal of the key being from the vault is the primary mechanism of the opening beat.",
+      "hook_score": 5,
+      "cliffhanger_score": 8,
+      "clarity_score": 5,
+      "drama_score": 3,
+      "pacing_penalty": 0.0,
+      "hook_archetype": "Secret Reveal",
+      "opening_tension": 1,
+      "ending_tension": 1,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 12,
+      "beat_count": 4,
+      "non_dialogue_count": 2,
+      "dialogue_wps": 0.45,
+      "action_beat_ratio": 0.5,
+      "footage_verification_required": false,
+      "review_flags": [
+        "low_criterion_score"
+      ]
+    },
+    {
+      "rank": 3,
+      "baseline_rank": 2,
+      "model_rank": 3,
+      "candidate_id": "E101:1200-3600",
+      "priority_group": "shortlist",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 5.5,
+      "baseline_score": 7.2,
+      "baseline_criteria": {
+        "hook": 7,
+        "cliffhanger": 8,
+        "clarity": 7
+      },
+      "episodes": [
+        101
+      ],
+      "segments": [
+        {
+          "episode": 101,
+          "file": "episode-101.txt",
+          "source_sha256": "1d45e9451b3b104623a06dec3f79a0a2af2e0505b0c9f0d8aec5722a4fbc59b4",
+          "start": "00:12.00",
+          "end": "00:36.00",
+          "start_cs": 1200,
+          "end_cs": 3600,
+          "start_beat_id": "E101-B003",
+          "end_beat_id": "E101-B006",
+          "start_timestamp_line": 18,
+          "end_timestamp_line": 30
+        }
+      ],
+      "duration_cs": 2400,
+      "duration_seconds": 24.0,
+      "hook": {
+        "beat_id": "E101-B003",
+        "text": "You lied about the key.",
+        "source_line": 17,
+        "timestamp_line": 18,
+        "start": "00:12.00",
+        "end": "00:14.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E101-B005",
+        "text": "Nora slides the brass key across the marble counter.",
+        "source_line": 25,
+        "timestamp_line": 26,
+        "start": "00:29.00",
+        "end": "00:31.50"
+      },
+      "hook_summary": "Nora lifts the empty key box.",
+      "cliffhanger_summary": "Nora slides the brass key across the marble counter.",
+      "rationale": "The hook reveals that Nora is holding an empty key box, hinting at a concealed fact or identity that will be revealed in the subsequent beat.",
+      "hook_score": 5,
+      "cliffhanger_score": 8,
+      "clarity_score": 5,
+      "drama_score": 6,
+      "pacing_penalty": 0.5,
+      "hook_archetype": "Secret Reveal",
+      "opening_tension": 1,
+      "ending_tension": 1,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 11,
+      "beat_count": 4,
+      "non_dialogue_count": 2,
+      "dialogue_wps": 0.46,
+      "action_beat_ratio": 0.5,
+      "footage_verification_required": false,
+      "review_flags": [
+        "low_criterion_score",
+        "pacing_timing_review"
+      ]
+    },
+    {
+      "rank": 4,
+      "baseline_rank": 3,
+      "model_rank": 4,
+      "candidate_id": "E101:1200-4000+E102:500-1300",
+      "priority_group": "shortlist",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 3.8,
+      "baseline_score": 6.95,
+      "baseline_criteria": {
+        "hook": 7,
+        "cliffhanger": 7,
+        "clarity": 8
+      },
+      "episodes": [
+        101,
+        102
+      ],
+      "segments": [
+        {
+          "episode": 101,
+          "file": "episode-101.txt",
+          "source_sha256": "1d45e9451b3b104623a06dec3f79a0a2af2e0505b0c9f0d8aec5722a4fbc59b4",
+          "start": "00:12.00",
+          "end": "00:40.00",
+          "start_cs": 1200,
+          "end_cs": 4000,
+          "start_beat_id": "E101-B003",
+          "end_beat_id": "E101-B007",
+          "start_timestamp_line": 18,
+          "end_timestamp_line": 34
+        },
+        {
+          "episode": 102,
+          "file": "episode-102.txt",
+          "source_sha256": "1d7516c13be31baac849ab2129b5aa2370514f2572ffb035bd97726e745f9196",
+          "start": "00:05.00",
+          "end": "00:13.00",
+          "start_cs": 500,
+          "end_cs": 1300,
+          "start_beat_id": "E102-B003",
+          "end_beat_id": "E102-B005",
+          "start_timestamp_line": 23,
+          "end_timestamp_line": 31
+        }
+      ],
+      "duration_cs": 3600,
+      "duration_seconds": 36.0,
+      "hook": {
+        "beat_id": "E101-B003",
+        "text": "You lied about the key.",
+        "source_line": 17,
+        "timestamp_line": 18,
+        "start": "00:12.00",
+        "end": "00:14.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E102-B004",
+        "text": "The guard listens, his hand on the vault door.",
+        "source_line": 26,
+        "timestamp_line": 27,
+        "start": "00:07.00",
+        "end": "00:09.50"
+      },
+      "hook_summary": "You lied about the key.",
+      "cliffhanger_summary": "The guard listens, his hand on the vault door.",
+      "rationale": "The hook reveals a concealed fact about the key, creating intrigue and tension.",
+      "hook_score": 5,
+      "cliffhanger_score": 3,
+      "clarity_score": 5,
+      "drama_score": 4,
+      "pacing_penalty": 0.5,
+      "hook_archetype": "Secret Reveal",
+      "opening_tension": 5,
+      "ending_tension": 5,
+      "join_coherent": true,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 33,
+      "beat_count": 8,
+      "non_dialogue_count": 3,
+      "dialogue_wps": 0.92,
+      "action_beat_ratio": 0.375,
+      "footage_verification_required": false,
+      "review_flags": [
+        "stitch_continuity_review",
+        "low_criterion_score",
+        "pacing_timing_review"
+      ]
+    },
+    {
+      "rank": 5,
+      "baseline_rank": 5,
+      "model_rank": 5,
+      "candidate_id": "E102:200-3100",
+      "priority_group": "shortlist",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 3.8,
+      "baseline_score": 6.9,
+      "baseline_criteria": {
+        "hook": 7,
+        "cliffhanger": 6,
+        "clarity": 9
+      },
+      "episodes": [
+        102
+      ],
+      "segments": [
+        {
+          "episode": 102,
+          "file": "episode-102.txt",
+          "source_sha256": "1d7516c13be31baac849ab2129b5aa2370514f2572ffb035bd97726e745f9196",
+          "start": "00:02.00",
+          "end": "00:31.00",
+          "start_cs": 200,
+          "end_cs": 3100,
+          "start_beat_id": "E102-B002",
+          "end_beat_id": "E102-B007",
+          "start_timestamp_line": 14,
+          "end_timestamp_line": 39
+        }
+      ],
+      "duration_cs": 2900,
+      "duration_seconds": 29.0,
+      "hook": {
+        "beat_id": "E102-B002",
+        "text": "You must open the vault tonight.",
+        "source_line": 13,
+        "timestamp_line": 14,
+        "start": "00:02.00",
+        "end": "00:05.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E102-B007",
+        "text": "Why is our mother's name written here?",
+        "source_line": 38,
+        "timestamp_line": 39,
+        "start": "00:28.00",
+        "end": "00:31.00"
+      },
+      "hook_summary": "NORA (VOICEOVER) says you must open the vault tonight.",
+      "cliffhanger_summary": "NORA asks why their mother's name is written here.",
+      "rationale": "The hook is a routine reply, but the cliffhanger is unresolved and raises tension.",
+      "hook_score": 3,
+      "cliffhanger_score": 3,
+      "clarity_score": 5,
+      "drama_score": 4,
+      "pacing_penalty": 0.0,
+      "hook_archetype": "Other",
+      "opening_tension": 1,
+      "ending_tension": 5,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 4,
+      "tension_bonus": 0.2,
+      "spoken_words": 28,
+      "beat_count": 6,
+      "non_dialogue_count": 2,
+      "dialogue_wps": 0.97,
+      "action_beat_ratio": 0.3333333333333333,
+      "footage_verification_required": false,
+      "review_flags": [
+        "low_criterion_score"
+      ]
+    },
+    {
+      "rank": 6,
+      "baseline_rank": 1,
+      "model_rank": 6,
+      "candidate_id": "E101:0-3600",
+      "priority_group": "shortlist",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 2.8,
+      "baseline_score": 7.7,
+      "baseline_criteria": {
+        "hook": 7,
+        "cliffhanger": 8,
+        "clarity": 9
+      },
+      "episodes": [
+        101
+      ],
+      "segments": [
+        {
+          "episode": 101,
+          "file": "episode-101.txt",
+          "source_sha256": "1d45e9451b3b104623a06dec3f79a0a2af2e0505b0c9f0d8aec5722a4fbc59b4",
+          "start": "00:00.00",
+          "end": "00:36.00",
+          "start_cs": 0,
+          "end_cs": 3600,
+          "start_beat_id": "E101-B001",
+          "end_beat_id": "E101-B006",
+          "start_timestamp_line": 10,
+          "end_timestamp_line": 30
+        }
+      ],
+      "duration_cs": 3600,
+      "duration_seconds": 36.0,
+      "hook": {
+        "beat_id": "E101-B001",
+        "text": "Nora grabs an unsigned letter.",
+        "source_line": 9,
+        "timestamp_line": 10,
+        "start": "00:00.00",
+        "end": "00:02.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E101-B005",
+        "text": "Nora slides the brass key across the marble counter.",
+        "source_line": 25,
+        "timestamp_line": 26,
+        "start": "00:29.00",
+        "end": "00:31.50"
+      },
+      "hook_summary": "Nora grabs an unsigned letter.",
+      "cliffhanger_summary": "Nora slides the brass key across the marble counter.",
+      "rationale": "The opening beat is a routine action, and the ending is a routine question.",
+      "hook_score": 3,
+      "cliffhanger_score": 3,
+      "clarity_score": 3,
+      "drama_score": 6,
+      "pacing_penalty": 0.5,
+      "hook_archetype": "Other",
+      "opening_tension": 1,
+      "ending_tension": 1,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 18,
+      "beat_count": 6,
+      "non_dialogue_count": 3,
+      "dialogue_wps": 0.5,
+      "action_beat_ratio": 0.5,
+      "footage_verification_required": false,
+      "review_flags": [
+        "low_criterion_score",
+        "pacing_timing_review"
+      ]
+    },
+    {
+      "rank": 7,
+      "baseline_rank": 8,
+      "model_rank": 7,
+      "candidate_id": "E103:850-2970",
+      "priority_group": "review_hold",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 6.45,
+      "baseline_score": 3.6,
+      "baseline_criteria": {
+        "hook": 4,
+        "cliffhanger": 4,
+        "clarity": 4
+      },
+      "episodes": [
+        103
+      ],
+      "segments": [
+        {
+          "episode": 103,
+          "file": "episode-103.txt",
+          "source_sha256": "6fe6dfbec2a64833bc0077dd5ec38fde1aa2e08a8c67c29be5497ba14330d05e",
+          "start": "00:08.50",
+          "end": "00:29.70",
+          "start_cs": 850,
+          "end_cs": 2970,
+          "start_beat_id": "E103-B004",
+          "end_beat_id": "E103-B008",
+          "start_timestamp_line": 23,
+          "end_timestamp_line": 39
+        }
+      ],
+      "duration_cs": 2120,
+      "duration_seconds": 21.2,
+      "hook": {
+        "beat_id": "E103-B004",
+        "text": "A narrow shelf pivots out of the wall.",
+        "source_line": 22,
+        "timestamp_line": 23,
+        "start": "00:08.50",
+        "end": "00:11.50"
+      },
+      "cliffhanger": {
+        "beat_id": "E103-B008",
+        "text": "An unfamiliar hand reaches through the opening toward her shoulder.",
+        "source_line": 38,
+        "timestamp_line": 39,
+        "start": "00:26.00",
+        "end": "00:29.70"
+      },
+      "hook_summary": "A narrow shelf pivots out of the wall.",
+      "cliffhanger_summary": "An unfamiliar hand reaches through the opening toward her shoulder.",
+      "rationale": "The hook presents a physical confrontation with a narrow shelf pivoting out of the wall, which is immediately followed by an unfamiliar hand reaching through the opening, creating a clear immediate reveal.",
+      "hook_score": 8,
+      "cliffhanger_score": 8,
+      "clarity_score": 5,
+      "drama_score": 0,
+      "pacing_penalty": 0.0,
+      "hook_archetype": "Physical Confrontation",
+      "opening_tension": 5,
+      "ending_tension": 5,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 0,
+      "beat_count": 5,
+      "non_dialogue_count": 5,
+      "dialogue_wps": 0.0,
+      "action_beat_ratio": 1.0,
+      "footage_verification_required": true,
+      "review_flags": [
+        "footage_verification_required",
+        "low_criterion_score"
+      ]
+    },
+    {
+      "rank": 8,
+      "baseline_rank": 7,
+      "model_rank": 8,
+      "candidate_id": "E103:0-2050",
+      "priority_group": "review_hold",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 1.95,
+      "baseline_score": 3.6,
+      "baseline_criteria": {
+        "hook": 4,
+        "cliffhanger": 4,
+        "clarity": 4
+      },
+      "episodes": [
+        103
+      ],
+      "segments": [
+        {
+          "episode": 103,
+          "file": "episode-103.txt",
+          "source_sha256": "6fe6dfbec2a64833bc0077dd5ec38fde1aa2e08a8c67c29be5497ba14330d05e",
+          "start": "00:00.00",
+          "end": "00:20.50",
+          "start_cs": 0,
+          "end_cs": 2050,
+          "start_beat_id": "E103-B001",
+          "end_beat_id": "E103-B006",
+          "start_timestamp_line": 11,
+          "end_timestamp_line": 31
+        }
+      ],
+      "duration_cs": 2050,
+      "duration_seconds": 20.5,
+      "hook": {
+        "beat_id": "E103-B001",
+        "text": "An iron gate drops between Nora and the exit.",
+        "source_line": 10,
+        "timestamp_line": 11,
+        "start": "00:00.00",
+        "end": "00:01.80"
+      },
+      "cliffhanger": {
+        "beat_id": "E103-B005",
+        "text": "The shot tracks across a row of sealed envelopes.",
+        "source_line": 26,
+        "timestamp_line": 27,
+        "start": "00:13.50",
+        "end": "00:18.00"
+      },
+      "hook_summary": "An iron gate drops between Nora and the exit.",
+      "cliffhanger_summary": "The shot tracks across a row of sealed envelopes.",
+      "rationale": "The opening hook is a routine action sequence, and the ending is a routine question.",
+      "hook_score": 3,
+      "cliffhanger_score": 3,
+      "clarity_score": 2,
+      "drama_score": 0,
+      "pacing_penalty": 0.5,
+      "hook_archetype": "Other",
+      "opening_tension": 1,
+      "ending_tension": 1,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 0,
+      "beat_count": 6,
+      "non_dialogue_count": 6,
+      "dialogue_wps": 0.0,
+      "action_beat_ratio": 1.0,
+      "footage_verification_required": true,
+      "review_flags": [
+        "footage_verification_required",
+        "low_criterion_score",
+        "pacing_timing_review"
+      ]
+    },
+    {
+      "rank": 9,
+      "baseline_rank": 9,
+      "model_rank": 9,
+      "candidate_id": "E103:380-2420",
+      "priority_group": "review_hold",
+      "score_source": "model_judge",
+      "judge_status": "validated",
+      "judge_error": null,
+      "score": 0.5,
+      "baseline_score": 2.75,
+      "baseline_criteria": {
+        "hook": 3,
+        "cliffhanger": 4,
+        "clarity": 4
+      },
+      "episodes": [
+        103
+      ],
+      "segments": [
+        {
+          "episode": 103,
+          "file": "episode-103.txt",
+          "source_sha256": "6fe6dfbec2a64833bc0077dd5ec38fde1aa2e08a8c67c29be5497ba14330d05e",
+          "start": "00:03.80",
+          "end": "00:24.20",
+          "start_cs": 380,
+          "end_cs": 2420,
+          "start_beat_id": "E103-B003",
+          "end_beat_id": "E103-B007",
+          "start_timestamp_line": 19,
+          "end_timestamp_line": 35
+        }
+      ],
+      "duration_cs": 2040,
+      "duration_seconds": 20.4,
+      "hook": {
+        "beat_id": "E103-B003",
+        "text": "Nora turns the brass key in the wall socket.",
+        "source_line": 18,
+        "timestamp_line": 19,
+        "start": "00:03.80",
+        "end": "00:07.00"
+      },
+      "cliffhanger": {
+        "beat_id": "E103-B006",
+        "text": "She slides one envelope outward and finds a wire attached inside.",
+        "source_line": 30,
+        "timestamp_line": 31,
+        "start": "00:18.10",
+        "end": "00:20.50"
+      },
+      "hook_summary": "Nora turns the brass key in the wall socket.",
+      "cliffhanger_summary": "She slides one envelope outward and finds a wire attached inside.",
+      "rationale": "The hook is a routine action that does not introduce intrigue or suspense.",
+      "hook_score": 2,
+      "cliffhanger_score": 1,
+      "clarity_score": 2,
+      "drama_score": 0,
+      "pacing_penalty": 1.0,
+      "hook_archetype": "Physical Confrontation",
+      "opening_tension": 1,
+      "ending_tension": 1,
+      "join_coherent": null,
+      "judge_uncertainty": null,
+      "tension_delta": 0,
+      "tension_bonus": 0.0,
+      "spoken_words": 0,
+      "beat_count": 5,
+      "non_dialogue_count": 5,
+      "dialogue_wps": 0.0,
+      "action_beat_ratio": 1.0,
+      "footage_verification_required": true,
+      "review_flags": [
+        "footage_verification_required",
+        "low_criterion_score",
+        "pacing_timing_review"
+      ]
+    }
+  ],
+  "ledger": {
+    "score_source": "judged_and_baseline",
+    "inputs": {
+      "summary": {
+        "files": 3,
+        "parsed_files": 3,
+        "rejected_files": 0,
+        "files_with_issues": 0,
+        "scenes": 4,
+        "beats": 22,
+        "adjacent_overlaps": 1,
+        "backward_starts": 0,
+        "warnings": 0,
+        "errors": 0,
+        "parsed_episode_numbers": [
+          101,
+          102,
+          103
+        ]
+      },
+      "files": [
+        {
+          "filename": "episode-101.txt",
+          "episode_number": 101,
+          "status": "parsed",
+          "source_sha256": "1d45e9451b3b104623a06dec3f79a0a2af2e0505b0c9f0d8aec5722a4fbc59b4",
+          "scenes": 1,
+          "beats": 7,
+          "beats_by_kind": {
+            "action": 3,
+            "dialogue": 4
+          },
+          "adjacent_overlaps": 0,
+          "backward_starts": 0,
+          "issues": []
+        },
+        {
+          "filename": "episode-102.txt",
+          "episode_number": 102,
+          "status": "parsed",
+          "source_sha256": "1d7516c13be31baac849ab2129b5aa2370514f2572ffb035bd97726e745f9196",
+          "scenes": 2,
+          "beats": 7,
+          "beats_by_kind": {
+            "action": 3,
+            "dialogue": 4
+          },
+          "adjacent_overlaps": 0,
+          "backward_starts": 0,
+          "issues": []
+        },
+        {
+          "filename": "episode-103.txt",
+          "episode_number": 103,
+          "status": "parsed",
+          "source_sha256": "6fe6dfbec2a64833bc0077dd5ec38fde1aa2e08a8c67c29be5497ba14330d05e",
+          "scenes": 1,
+          "beats": 8,
+          "beats_by_kind": {
+            "action": 6,
+            "camera": 2
+          },
+          "adjacent_overlaps": 1,
+          "backward_starts": 0,
+          "issues": []
+        }
+      ]
+    },
+    "selection_settings": {
+      "continuous_limit_per_episode": 3,
+      "near_duplicate_iou_percent": 75,
+      "stitch_part_cs": [
+        800,
+        3000
+      ]
+    },
+    "continuous_search": [
+      {
+        "episode_number": 101,
+        "scanned_windows": 9,
+        "eligible_windows": 9,
+        "selected_ids": [
+          "E101:0-3600",
+          "E101:1200-3600",
+          "E101:500-3150"
+        ],
+        "suppressed_duplicates": [
+          {
+            "candidate_id": "E101:0-4000",
+            "kept_id": "E101:0-3600",
+            "score": 6.8,
+            "overlap_ratio": 0.9,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E101:500-3600",
+            "kept_id": "E101:0-3600",
+            "score": 6.55,
+            "overlap_ratio": 0.8611,
+            "reason": "temporal_overlap"
+          },
+          {
+            "candidate_id": "E101:1200-4000",
+            "kept_id": "E101:1200-3600",
+            "score": 6.3,
+            "overlap_ratio": 0.8571,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E101:0-2320",
+            "kept_id": "E101:0-3600",
+            "score": 6.0,
+            "overlap_ratio": 0.6444,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E101:0-3150",
+            "kept_id": "E101:0-3600",
+            "score": 5.9,
+            "overlap_ratio": 0.875,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E101:500-4000",
+            "kept_id": "E101:0-3600",
+            "score": 5.65,
+            "overlap_ratio": 0.775,
+            "reason": "temporal_overlap"
+          }
+        ],
+        "not_shortlisted": 6
+      },
+      {
+        "episode_number": 102,
+        "scanned_windows": 7,
+        "eligible_windows": 7,
+        "selected_ids": [
+          "E102:1100-3100",
+          "E102:200-3100"
+        ],
+        "suppressed_duplicates": [
+          {
+            "candidate_id": "E102:200-2200",
+            "kept_id": "E102:200-3100",
+            "score": 6.4,
+            "overlap_ratio": 0.6897,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E102:500-3100",
+            "kept_id": "E102:1100-3100",
+            "score": 6.0,
+            "overlap_ratio": 0.7692,
+            "reason": "temporal_overlap"
+          },
+          {
+            "candidate_id": "E102:0-3100",
+            "kept_id": "E102:200-3100",
+            "score": 5.95,
+            "overlap_ratio": 0.9355,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E102:700-3100",
+            "kept_id": "E102:1100-3100",
+            "score": 5.75,
+            "overlap_ratio": 0.8333,
+            "reason": "temporal_overlap"
+          },
+          {
+            "candidate_id": "E102:0-2200",
+            "kept_id": "E102:200-3100",
+            "score": 5.45,
+            "overlap_ratio": 0.6452,
+            "reason": "shared_hook"
+          }
+        ],
+        "not_shortlisted": 5
+      },
+      {
+        "episode_number": 103,
+        "scanned_windows": 6,
+        "eligible_windows": 6,
+        "selected_ids": [
+          "E103:0-2050",
+          "E103:850-2970",
+          "E103:380-2420"
+        ],
+        "suppressed_duplicates": [
+          {
+            "candidate_id": "E103:0-2420",
+            "kept_id": "E103:0-2050",
+            "score": 3.6,
+            "overlap_ratio": 0.8471,
+            "reason": "shared_hook"
+          },
+          {
+            "candidate_id": "E103:0-2970",
+            "kept_id": "E103:0-2050",
+            "score": 3.6,
+            "overlap_ratio": 0.6902,
+            "reason": "shared_hook"
+          }
+        ],
+        "not_shortlisted": 3
+      }
+    ],
+    "stitch_search": [
+      {
+        "episodes": [
+          101,
+          102
+        ],
+        "recap": {
+          "status": "confirmed",
+          "reason": "opening_scene_labeled_recap",
+          "resume_cs": 500,
+          "evidence_ids": [
+            "E102-B001",
+            "E102-B002"
+          ],
+          "scene_line": 4
+        },
+        "original_start_beat_id": "E102-B001",
+        "revised_start_beat_id": "E102-B003",
+        "selected_id": "E101:1200-4000+E102:500-1300",
+        "reason": "selected"
+      },
+      {
+        "episodes": [
+          102,
+          103
+        ],
+        "recap": {
+          "status": "clear",
+          "reason": "no_corroborated_opening_replay",
+          "resume_cs": null,
+          "evidence_ids": [],
+          "scene_line": null
+        },
+        "original_start_beat_id": "E103-B001",
+        "revised_start_beat_id": "E103-B001",
+        "selected_id": null,
+        "reason": "no_shared_speaker"
+      }
+    ],
+    "counts": {
+      "continuous": 8,
+      "stitched": 1,
+      "review_hold": 3
+    },
+    "model_usage": {
+      "requests": 9,
+      "input_tokens": 7926,
+      "output_tokens": 1749,
+      "requests_with_unreported_usage": 0,
+      "api_cost_usd": 0,
+      "median_request_seconds": 1.8634
+    },
+    "latency_seconds": {
+      "read_and_parse": 0.0,
+      "candidate_search": 0.0023,
+      "model_judging": 19.9977,
+      "read_through_verified_records": 20.0015
+    },
+    "judge": {
+      "model": "qwen2.5:1.5b",
+      "endpoint_type": "loopback",
+      "prompt_version": "editor-rubric-v2",
+      "response_format": "schema",
+      "temperature": 0.0,
+      "timeout_seconds": 90.0,
+      "max_output_tokens": 500,
+      "limit": null,
+      "selected": 9,
+      "validated": 9,
+      "used_for_ranking": 9,
+      "evaluations": [
+        {
+          "candidate_id": "E101:0-3600",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            3,
+            3,
+            3
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 4.888639300013892,
+              "input_tokens": 916,
+              "output_tokens": 183,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E101:1200-3600",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            5,
+            8,
+            5
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.863364899996668,
+              "input_tokens": 819,
+              "output_tokens": 202,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E101:1200-4000+E102:500-1300",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            5,
+            3,
+            5
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.8654845000128262,
+              "input_tokens": 1044,
+              "output_tokens": 199,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E102:1100-3100",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            5,
+            8,
+            5
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.7329958999762312,
+              "input_tokens": 760,
+              "output_tokens": 188,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E102:200-3100",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            3,
+            3,
+            5
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.8024393999949098,
+              "input_tokens": 915,
+              "output_tokens": 195,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E101:500-3150",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            5,
+            8,
+            5
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.8835209000390023,
+              "input_tokens": 809,
+              "output_tokens": 194,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E103:0-2050",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            3,
+            3,
+            2
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.7720083000021987,
+              "input_tokens": 928,
+              "output_tokens": 186,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E103:850-2970",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            8,
+            8,
+            5
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 2.031034499988891,
+              "input_tokens": 863,
+              "output_tokens": 211,
+              "http_status": 200
+            }
+          ]
+        },
+        {
+          "candidate_id": "E103:380-2420",
+          "validated": true,
+          "used_for_ranking": true,
+          "submitted_scores": [
+            2,
+            1,
+            2
+          ],
+          "error": null,
+          "details": null,
+          "attempts": [
+            {
+              "status": "response",
+              "latency_seconds": 1.770778700010851,
+              "input_tokens": 872,
+              "output_tokens": 191,
+              "http_status": 200
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "audit": "# Batch review flags\n\nReview excerpts for an immediate hook, an unresolved ending, and stakes a new viewer can\nunderstand. Confirm footage for cuts marked for that check.\n\n## Source issues and coverage\n\n- All inputs parsed with continuous coverage and no source issues.\n\n## Adjacent stitches and recaps\n\n- E101 → E102 — selected. Recap confirmed (opening_scene_labeled_recap). Start E102-B001 → E102-B003. Selected E101:1200-4000+E102:500-1300.\n  Evidence IDs E102-B001, E102-B002.\n- E102 → E103 — no_shared_speaker. Recap clear (no_corroborated_opening_replay). Start E103-B001 → E103-B001. Selected none.\n\n## Model evaluation\n\n- 9 of 9 selected judgments passed schema and evidence validation. 9 were used for ranking.\n\n## Candidate flags\n\n- Rank 1, E102:1100-3100 — low_criterion_score.\n- Rank 2, E101:500-3150 — low_criterion_score.\n- Rank 3, E101:1200-3600 — low_criterion_score, pacing_timing_review.\n- Rank 4, E101:1200-4000+E102:500-1300 — stitch_continuity_review, low_criterion_score, pacing_timing_review.\n- Rank 5, E102:200-3100 — low_criterion_score.\n- Rank 6, E101:0-3600 — low_criterion_score, pacing_timing_review.\n- Rank 7, E103:850-2970 — footage_verification_required, low_criterion_score.\n- Rank 8, E103:0-2050 — footage_verification_required, low_criterion_score, pacing_timing_review.\n- Rank 9, E103:380-2420 — footage_verification_required, low_criterion_score, pacing_timing_review.\n"
+}

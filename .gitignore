@@ -1,0 +1,12 @@
+# Private assignment inputs and generated results
+/data/input_pack/
+/raw_outputs/
+/output/
+
+# Local credentials and Python tooling
+/.env
+/.streamlit/secrets.toml
+/.venv/
+/.deps/
+__pycache__/
+*.py[cod]

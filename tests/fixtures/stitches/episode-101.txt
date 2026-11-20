@@ -1,0 +1,37 @@
+Episode number: 101
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: INT. RECORDS ROOM - NIGHT
+Scene start: 00:00.00
+Scene end: 00:40.00
+
+**ACTION:**
+Start: (00:00.00) | End: (00:02.00)
+Nora grabs an unsigned letter.
+
+**NORA:**
+Start: (00:05.00) | End: (00:07.00)
+My sister sent this from the vault.
+
+**NORA (Firm):**
+Start: (00:12.00) | End: (00:14.00)
+You lied about the key.
+
+**ACTION:**
+Start: (00:21.00) | End: (00:23.20)
+Nora lifts the empty key box.
+
+**ACTION:**
+Start: (00:29.00) | End: (00:31.50)
+Nora slides the brass key across the marble counter.
+
+**NORA:**
+Start: (00:33.00) | End: (00:36.00)
+You must open the vault tonight!
+
+**NORA:**
+Start: (00:37.00) | End: (00:40.00)
+Why is the guard at the door?
+
+--- SCRIPT END ---
