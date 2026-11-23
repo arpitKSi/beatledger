@@ -23,56 +23,7 @@ python -m streamlit run app.py --server.address 127.0.0.1
 
 ## How BeatLedger works
 
-```mermaid
-flowchart TD
-    subgraph Build["1 · Build the shortlist"]
-        input["Bundled sample or uploaded .txt screenplays"]
-        parse["Parse timestamped beats<br/>Keep episode, beat ID and source line"]
-        search["Find continuous cuts and adjacent-episode stitches<br/>Remove near-duplicates and check repeated recaps"]
-        verify["Verify 20–60 second cuts<br/>Use dialogue-safe edges and source timecodes"]
-        baseline["Score every verified cut offline<br/>Hook 35% · cliffhanger 30% · clarity 25% · drama 10%"]
-        input --> parse --> search --> verify --> baseline
-    end
-
-    subgraph Judge["2 · Apply optional model judgments"]
-        judge{"Judge this cut?"}
-        excerpts["Send selected excerpts<br/>Include timing and eligible evidence IDs"]
-        validate{"Usable scores<br/>and source citations?"}
-        scored["Apply validated scores<br/>and the rising-tension bonus"]
-        fallback["Keep the baseline score"]
-        judge -->|Yes| excerpts --> validate
-        judge -->|Offline or outside sample| fallback
-        validate -->|Yes| scored
-        validate -->|No| fallback
-    end
-
-    subgraph Review["3 · Review and export"]
-        rank["Rank cuts and flag ones that need review"]
-        inspect["Inspect the full screenplay excerpt"]
-        trim["Preview and verify a trim"]
-        decision["Save an editor decision"]
-        shortlist["Ranked CSV and JSON"]
-        decisions["Review decisions JSON"]
-        audit["Run audit<br/>Coverage, recap checks, model usage and flags"]
-        rank --> inspect
-        inspect --> decision
-        inspect -->|Optional| trim -->|Review the new range| inspect
-        rank --> shortlist
-        rank --> audit
-        decision --> decisions
-    end
-
-    baseline --> judge
-    scored --> rank
-    fallback --> rank
-
-    classDef process fill:#e9f4f2,stroke:#2a8075,color:#17333b
-    classDef choice fill:#fff3dc,stroke:#ac751f,color:#402c13
-    classDef output fill:#eaf0fb,stroke:#526f9b,color:#203452
-    class input,parse,search,verify,baseline,excerpts,scored,fallback,rank,inspect,trim,decision process
-    class judge,validate choice
-    class shortlist,decisions,audit output
-```
+![BeatLedger workflow from timed screenplays through verified cuts, optional model judging, editor review, and export](docs/workflow.svg)
 
 ## How cuts are selected
 
