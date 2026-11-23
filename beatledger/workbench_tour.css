@@ -9,6 +9,18 @@
     text-underline-offset: .2em;
     cursor: pointer;
   }
+  .bl-header #bl-tour-launch {
+    flex: 0 0 auto;
+    padding: .55rem .9rem;
+    border: 1px solid #82cabe;
+    border-radius: .5rem;
+    background: rgb(255 255 255 / 8%);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .bl-header #bl-tour-launch:hover { background: rgb(255 255 255 / 17%); }
+  .bl-header #bl-tour-launch:focus-visible { outline-color: #b5f0e4; }
   #bl-tour[hidden], #bl-tour [hidden] { display: none; }
   #bl-tour { position: fixed; inset: 0; z-index: 2000000; pointer-events: none; font: 15px/1.45 system-ui, sans-serif; }
   #bl-tour .bl-tour-spotlight {
