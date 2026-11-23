@@ -24,6 +24,13 @@ from run_batch import BatchAnalysis, analyze_pack, json_document, ranked_csv, ra
 
 
 ROOT = Path(__file__).resolve().parent
+_workbench_tour = st.components.v2.component(
+    "beatledger_workbench_tour",
+    html='<button type="button" id="bl-tour-launch">Take a tour</button>',
+    css=(ROOT / "beatledger/workbench_tour.css").read_text(encoding="utf-8"),
+    js=(ROOT / "beatledger/workbench_tour.js").read_text(encoding="utf-8"),
+    isolate_styles=False,
+)
 MODEL_SAMPLE_LIMIT = 12
 HOSTED_SAMPLE_LIMIT = 4
 OFFLINE_JUDGE = "Offline baseline"
@@ -205,6 +212,7 @@ def _source_controls() -> None:
         hosted_judge = hosted and provider == OFFLINE_JUDGE and choice == "Bundled sample" and st.button(
             "Judge sample live", width="stretch", key="hosted_sample",
         )
+        _workbench_tour(key="workbench_tour")
         if "analysis" not in st.session_state or run or saved or hosted_judge:
             work = "Loading saved judgments…" if saved else "Finding and verifying promo cuts…"
             with st.spinner(work):
@@ -579,18 +587,6 @@ def _downloads(analysis: BatchAnalysis) -> None:
 def _review_tab(analysis: BatchAnalysis) -> None:
     st.subheader("Ranked cuts")
     _downloads(analysis)
-    with st.expander("First time here?"):
-        st.markdown(
-            "1. Keep **Bundled sample** selected to try the app. To use your own scripts, "
-            "choose **Upload files** and add your timestamped .txt files.\n"
-            "2. Run the analysis. The offline baseline works without a key. "
-            "For hosted AI judging, choose a provider and save its key for the session.\n"
-            "3. Pick a result in **Inspect cut**, below the table. Read **Full cut excerpt** "
-            "to see what plays in that range.\n"
-            "4. Use **Adjust cut** to preview and save a trim. Under **Editor decision**, "
-            "choose a status and click **Save decision**.\n"
-            "5. Open **Download run and reviews** above to save the shortlist and your decisions."
-        )
     if feedback := st.session_state.pop("feedback", None):
         st.success(feedback)
     if not analysis.records:
