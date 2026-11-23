@@ -38,9 +38,8 @@ export default function mountTour() {
     },
     {
       title: "Filter the shortlist", tab: "Review cuts",
-      target: () => visible('[class*="st-key-archetype-"]', reviewPanel())
-        ?.closest('[data-testid="stHorizontalBlock"]'),
-      copy: "Hook archetype is the opening type. Tension delta measures how much the stakes change. Dialogue WPS is words per second. Review status lets you focus on cuts you still need to review.",
+      target: () => visible('[class*="st-key-cut-filters-"] button', reviewPanel()),
+      copy: "Open Filters to narrow the list by opening type, change in tension, words per second, or review status.",
     },
     {
       title: "Pick a cut to inspect", tab: "Review cuts", above: true,
@@ -48,9 +47,9 @@ export default function mountTour() {
       copy: "Try choosing another cut here. BeatLedger updates the source excerpt, exact timecodes, scores and editor controls for that cut.",
     },
     {
-      title: "Read the full cut", tab: "Review cuts", open: "Full cut excerpt", above: true,
-      target: () => disclosure("Full cut excerpt"),
-      copy: "Read the dialogue and actions in order. Compare the opening and ending with the nearby Source evidence to see why the cut was picked.",
+      title: "Read the full cut", tab: "Review cuts", above: true,
+      target: () => visible(".st-key-cut_excerpt h4", reviewPanel()),
+      copy: "Read the dialogue and actions in order. Open Evidence and scores below it to see which beats supported the ranking.",
     },
     {
       title: "Preview a trim", tab: "Review cuts", open: "Adjust cut", above: true,
@@ -106,6 +105,7 @@ export default function mountTour() {
   let frame = 0;
   let visit = 0;
   let startingTab;
+  let startedWithSidebarClosed;
 
   function position() {
     const step = steps[index];
@@ -208,13 +208,14 @@ export default function mountTour() {
     window.removeEventListener("resize", schedulePosition);
     const previous = startingTab && tab(startingTab);
     if (previous && previous.getAttribute("aria-selected") !== "true") previous.click();
-    const returnFocus = visible('button[aria-label="Expand sidebar"]') || visible("#bl-tour-launch");
-    returnFocus?.focus({ preventScroll: true });
+    if (startedWithSidebarClosed) visible('button[aria-label="Collapse sidebar"]')?.click();
+    visible("#bl-tour-launch")?.focus();
   }
 
   document.addEventListener("click", event => {
     if (!event.target.closest("#bl-tour-launch") || !overlay.hidden) return;
     startingTab = document.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim();
+    startedWithSidebarClosed = Boolean(visible('button[aria-label="Expand sidebar"]'));
     overlay.hidden = false;
     document.addEventListener("scroll", schedulePosition, true);
     window.addEventListener("resize", schedulePosition);
