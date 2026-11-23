@@ -181,7 +181,7 @@ def _source_controls() -> None:
             if hosted:
                 st.caption("Upload only scripts you have permission to share.")
         else:
-            st.caption("Three synthetic episodes with a recap and a silent action sequence.")
+            st.caption("Try three sample episodes without an API key.")
         provider, settings = OFFLINE_JUDGE, None
         local_judge = False
         if hosted:
@@ -288,13 +288,20 @@ def _filtered(analysis: BatchAnalysis, serial: int) -> list[dict]:
     archetypes = sorted({record["hook_archetype"] for record in analysis.records if record["hook_archetype"]})
     if any(record["hook_archetype"] is None for record in analysis.records):
         archetypes.append(UNJUDGED)
-    kinds = c1.multiselect("Hook archetype", archetypes, placeholder="All archetypes", key=f"archetype-{serial}")
+    kinds = c1.multiselect(
+        "Hook archetype", archetypes, placeholder="All archetypes", key=f"archetype-{serial}",
+        help="The kind of opening, such as a secret reveal or a confrontation.",
+    )
     tension = c2.slider(
         "Tension delta", -10, 10, (-10, 10), key=f"tension-{serial}",
+        help="Ending tension minus opening tension. A positive number means the stakes rose.",
         disabled=not any(record["tension_delta"] is not None for record in analysis.records),
     )
     max_wps = max(1.0, math.ceil(max(record["dialogue_wps"] for record in analysis.records) * 10) / 10)
-    pace = c3.slider("Dialogue WPS", 0.0, max_wps, (0.0, max_wps), step=.01, key=f"wps-{serial}")
+    pace = c3.slider(
+        "Dialogue WPS", 0.0, max_wps, (0.0, max_wps), step=.01, key=f"wps-{serial}",
+        help="Spoken words per second of the cut. A high value can signal rushed dialogue.",
+    )
     status = c4.selectbox(
         "Review status", ("all", *REVIEW_STATUS), format_func=lambda value: REVIEW_STATUS.get(value, "All cuts"),
         key=f"status-{serial}",
@@ -506,6 +513,7 @@ def _adjust_cut(analysis: BatchAnalysis, record: dict, cut: ReviewCut, serial: i
     timelines = st.session_state.timelines
     version = f"{serial}:{candidate_id}:{cut.version}"
     with st.expander("Adjust cut"):
+        st.caption("Move the handles, check the preview on the left, then verify and apply the trim.")
         specs = _trim_slider(cut, timelines, version)
         try:
             preview = verify_cut(timelines, specs)
@@ -562,11 +570,27 @@ def _downloads(analysis: BatchAnalysis) -> None:
             "Review decisions JSON", json_document(reviews), "review_decisions.json", "application/json",
             disabled=not reviews["reviews"], on_click="ignore",
         )
+        st.caption(
+            "Use CSV to scan the shortlist and ranked JSON to check the evidence. "
+            "Save a decision or apply a trim to download review decisions."
+        )
 
 
 def _review_tab(analysis: BatchAnalysis) -> None:
     st.subheader("Ranked cuts")
     _downloads(analysis)
+    with st.expander("First time here?"):
+        st.markdown(
+            "1. Keep **Bundled sample** selected to try the app. To use your own scripts, "
+            "choose **Upload files** and add your timestamped .txt files.\n"
+            "2. Run the analysis. The offline baseline works without a key. "
+            "For hosted AI judging, choose a provider and save its key for the session.\n"
+            "3. Pick a result in **Inspect cut**, below the table. Read **Full cut excerpt** "
+            "to see what plays in that range.\n"
+            "4. Use **Adjust cut** to preview and save a trim. Under **Editor decision**, "
+            "choose a status and click **Save decision**.\n"
+            "5. Open **Download run and reviews** above to save the shortlist and your decisions."
+        )
     if feedback := st.session_state.pop("feedback", None):
         st.success(feedback)
     if not analysis.records:
@@ -598,7 +622,10 @@ def _review_tab(analysis: BatchAnalysis) -> None:
     key = f"inspect-{serial}"
     if st.session_state.get(key) not in records:
         st.session_state[key] = next(iter(records))
-    chosen = st.selectbox("Inspect cut", tuple(records), format_func=cut_label, key=key)
+    chosen = st.selectbox(
+        "Inspect cut", tuple(records), format_func=cut_label, key=key,
+        help="Choose a result to read its excerpt on the left and review or trim it on the right.",
+    )
     record = records[chosen]
     cut = st.session_state.revisions.get(chosen) or original_cut(record, st.session_state.timelines)
     left, right = st.columns((1.1, 1), gap="large")
@@ -614,6 +641,7 @@ def _review_tab(analysis: BatchAnalysis) -> None:
 def _audit_tab(analysis: BatchAnalysis) -> None:
     ledger = analysis.ledger
     st.subheader("Run audit")
+    st.caption("Check which files loaded, where episodes were joined, and why anything was flagged.")
     a, b = st.columns(2)
     a.download_button("Run ledger JSON", json_document(ledger), "run_ledger.json", "application/json", on_click="ignore")
     b.download_button("Review flags Markdown", analysis.audit, "failures_and_flags.md", "text/markdown", on_click="ignore")
@@ -667,7 +695,7 @@ def _metrics_tab(analysis: BatchAnalysis) -> None:
     cost = usage["api_cost_usd"]
 
     st.subheader("Run metrics")
-    st.caption("Measured on the active run. The bundled sample and uploaded screenplays have separate metrics.")
+    st.caption("See how many episodes got a cut, what the model judged, and how the rankings changed in this run.")
     left, right = st.columns(2)
     with left:
         st.markdown("#### Coverage and safety")
