@@ -21,6 +21,59 @@ python -m streamlit run app.py --server.address 127.0.0.1
 - **Full cut excerpt** shows the screenplay beats across the selected span, including dialogue, action and production cues. It updates for a valid trim preview and shows the exact overlap when a beat crosses a cut edge. Stitched cuts show both episode sections in order.
 - Open **Cut metrics** for the ranked cut and its baseline comparison. The **Metrics** tab shows run coverage, model usage, timing, review holds, and score and rank changes. Download ranked CSV, JSON, run audit and review decisions. Review decisions live in the browser session.
 
+## How BeatLedger works
+
+```mermaid
+flowchart TD
+    subgraph Build["1 · Build the shortlist"]
+        input["Bundled sample or uploaded .txt screenplays"]
+        parse["Parse timestamped beats<br/>Keep episode, beat ID and source line"]
+        search["Find continuous cuts and adjacent-episode stitches<br/>Remove near-duplicates and check repeated recaps"]
+        verify["Verify 20–60 second cuts<br/>Use dialogue-safe edges and source timecodes"]
+        baseline["Score every verified cut offline<br/>Hook 35% · cliffhanger 30% · clarity 25% · drama 10%"]
+        input --> parse --> search --> verify --> baseline
+    end
+
+    subgraph Judge["2 · Apply optional model judgments"]
+        judge{"Judge this cut?"}
+        excerpts["Send selected excerpts<br/>Include timing and eligible evidence IDs"]
+        validate{"Usable scores<br/>and source citations?"}
+        scored["Apply validated scores<br/>and the rising-tension bonus"]
+        fallback["Keep the baseline score"]
+        judge -->|Yes| excerpts --> validate
+        judge -->|Offline or outside sample| fallback
+        validate -->|Yes| scored
+        validate -->|No| fallback
+    end
+
+    subgraph Review["3 · Review and export"]
+        rank["Rank cuts and flag ones that need review"]
+        inspect["Inspect the full screenplay excerpt"]
+        trim["Preview and verify a trim"]
+        decision["Save an editor decision"]
+        shortlist["Ranked CSV and JSON"]
+        decisions["Review decisions JSON"]
+        audit["Run audit<br/>Coverage, recap checks, model usage and flags"]
+        rank --> inspect
+        inspect --> decision
+        inspect -->|Optional| trim -->|Review the new range| inspect
+        rank --> shortlist
+        rank --> audit
+        decision --> decisions
+    end
+
+    baseline --> judge
+    scored --> rank
+    fallback --> rank
+
+    classDef process fill:#e9f4f2,stroke:#2a8075,color:#17333b
+    classDef choice fill:#fff3dc,stroke:#ac751f,color:#402c13
+    classDef output fill:#eaf0fb,stroke:#526f9b,color:#203452
+    class input,parse,search,verify,baseline,excerpts,scored,fallback,rank,inspect,trim,decision process
+    class judge,validate choice
+    class shortlist,decisions,audit output
+```
+
 ## How cuts are selected
 
 The parser gives each beat an exact start and end in centiseconds and retains its source lines. Search considers dialogue-safe boundaries, removes near-duplicate alternatives, checks adjacent episodes for repeated openers, and keeps up to three continuous options per episode and one stitch per adjacent pair.
