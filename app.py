@@ -26,7 +26,15 @@ from run_batch import BatchAnalysis, analyze_pack, json_document, ranked_csv, ra
 ROOT = Path(__file__).resolve().parent
 _workbench_tour = st.components.v2.component(
     "beatledger_workbench_tour",
-    html='<button type="button" id="bl-tour-launch">Take a tour</button>',
+    html="""
+        <header class="bl-header">
+            <div>
+                <h1>BeatLedger</h1>
+                <p>Find, verify, and review 20–60 second promo cuts.</p>
+            </div>
+            <button type="button" id="bl-tour-launch">Take a tour</button>
+        </header>
+    """,
     css=(ROOT / "beatledger/workbench_tour.css").read_text(encoding="utf-8"),
     js=(ROOT / "beatledger/workbench_tour.js").read_text(encoding="utf-8"),
     isolate_styles=False,
@@ -60,7 +68,9 @@ def _render_title() -> None:
         <style>
             .block-container { padding-top: 3rem; }
             .bl-header { background: #12363b; color: #fff; padding: 1.05rem 1.45rem;
-              border-radius: 1rem; margin-bottom: .4rem; border-left: .35rem solid #51c5ae; }
+              border-radius: 1rem; margin-bottom: .4rem; border-left: .35rem solid #51c5ae;
+              display: flex; align-items: center; justify-content: space-between; gap: .8rem 1rem;
+              flex-wrap: wrap; }
             .bl-header h1 { color: #fff; margin: 0; font-size: clamp(2rem, 4vw, 3rem); padding: 0;
               letter-spacing: -.035em; }
             .bl-header p { margin: .25rem 0 0; color: #d8efea; font-size: 1rem; }
@@ -79,11 +89,8 @@ def _render_title() -> None:
                 .st-key-run-metrics [data-testid="stColumn"] { flex: 1 1 45%; min-width: 0; }
             }
         </style>
-        <header class="bl-header">
-            <h1>BeatLedger</h1>
-            <p>Find, verify, and review 20–60 second promo cuts.</p>
-        </header>
     """)
+    _workbench_tour(key="workbench_tour")
 
 
 def _install_run(analysis: BatchAnalysis, source: str, saved: bool) -> None:
@@ -212,7 +219,6 @@ def _source_controls() -> None:
         hosted_judge = hosted and provider == OFFLINE_JUDGE and choice == "Bundled sample" and st.button(
             "Judge sample live", width="stretch", key="hosted_sample",
         )
-        _workbench_tour(key="workbench_tour")
         if "analysis" not in st.session_state or run or saved or hosted_judge:
             work = "Loading saved judgments…" if saved else "Finding and verifying promo cuts…"
             with st.spinner(work):
@@ -292,28 +298,28 @@ def _table_records(records: list[dict]) -> list[dict]:
 
 
 def _filtered(analysis: BatchAnalysis, serial: int) -> list[dict]:
-    c1, c2, c3, c4 = st.columns((1.4, 1, 1, 1))
-    archetypes = sorted({record["hook_archetype"] for record in analysis.records if record["hook_archetype"]})
-    if any(record["hook_archetype"] is None for record in analysis.records):
-        archetypes.append(UNJUDGED)
-    kinds = c1.multiselect(
-        "Hook archetype", archetypes, placeholder="All archetypes", key=f"archetype-{serial}",
-        help="The kind of opening, such as a secret reveal or a confrontation.",
-    )
-    tension = c2.slider(
-        "Tension delta", -10, 10, (-10, 10), key=f"tension-{serial}",
-        help="Ending tension minus opening tension. A positive number means the stakes rose.",
-        disabled=not any(record["tension_delta"] is not None for record in analysis.records),
-    )
-    max_wps = max(1.0, math.ceil(max(record["dialogue_wps"] for record in analysis.records) * 10) / 10)
-    pace = c3.slider(
-        "Dialogue WPS", 0.0, max_wps, (0.0, max_wps), step=.01, key=f"wps-{serial}",
-        help="Spoken words per second of the cut. A high value can signal rushed dialogue.",
-    )
-    status = c4.selectbox(
-        "Review status", ("all", *REVIEW_STATUS), format_func=lambda value: REVIEW_STATUS.get(value, "All cuts"),
-        key=f"status-{serial}",
-    )
+    with st.popover("Filters", icon=":material/filter_list:", key=f"cut-filters-{serial}"):
+        archetypes = sorted({record["hook_archetype"] for record in analysis.records if record["hook_archetype"]})
+        if any(record["hook_archetype"] is None for record in analysis.records):
+            archetypes.append(UNJUDGED)
+        kinds = st.multiselect(
+            "Hook archetype", archetypes, placeholder="All archetypes", key=f"archetype-{serial}",
+            help="The kind of opening, such as a secret reveal or a confrontation.",
+        )
+        tension = st.slider(
+            "Tension delta", -10, 10, (-10, 10), key=f"tension-{serial}",
+            help="Ending tension minus opening tension. A positive number means the stakes rose.",
+            disabled=not any(record["tension_delta"] is not None for record in analysis.records),
+        )
+        max_wps = max(1.0, math.ceil(max(record["dialogue_wps"] for record in analysis.records) * 10) / 10)
+        pace = st.slider(
+            "Dialogue WPS", 0.0, max_wps, (0.0, max_wps), step=.01, key=f"wps-{serial}",
+            help="Spoken words per second of the cut. A high value can signal rushed dialogue.",
+        )
+        status = st.selectbox(
+            "Review status", ("all", *REVIEW_STATUS), format_func=lambda value: REVIEW_STATUS.get(value, "All cuts"),
+            key=f"status-{serial}",
+        )
     return filter_records(
         analysis.records, st.session_state.decisions, archetypes=kinds, tension=tension, pacing=pace, status=status,
     )
@@ -338,7 +344,8 @@ def _evidence_panel(
 
 
 def _cut_excerpt(segments: tuple[Segment, ...], episodes: dict[int, Episode], *, previewing: bool) -> None:
-    with st.expander("Full cut excerpt", expanded=True):
+    with st.container(border=True, key="cut_excerpt"):
+        st.markdown("#### Full cut excerpt")
         duration = sum(part.duration_cs for part in segments) / 100
         label = "Trim preview" if previewing else "Saved cut"
         st.caption(f"{label} · {duration:.2f} s · All screenplay beats overlapping these timecodes")
@@ -400,14 +407,15 @@ def _cut_details(cut: ReviewCut, record: dict, episodes: dict[int, Episode], pre
             f"({segment.duration_cs / 100:.2f} s)"
         )
     _cut_excerpt(preview or cut.segments, episodes, previewing=bool(preview))
-    with st.expander("Cut metrics"):
-        _cut_metrics(cut, record)
-    with st.expander("Source evidence", expanded=True):
+    with st.expander("Evidence and scores"):
+        st.markdown("#### Source evidence")
         _evidence_panel("Opening hook", cut.hook, None if cut.revised else record["hook_summary"])
         _evidence_panel("Ending beat", cut.cliffhanger, None if cut.revised else record["cliffhanger_summary"])
         if not cut.revised:
             st.caption("Ranking rationale")
             _esc_paragraph(record["rationale"])
+        st.markdown("#### Cut metrics")
+        _cut_metrics(cut, record)
     shown_flags = [FLAGS[flag] for flag in cut.flags if flag in FLAGS]
     if shown_flags:
         st.caption("Review flags")
@@ -595,7 +603,7 @@ def _review_tab(analysis: BatchAnalysis) -> None:
     serial = st.session_state.run_number
     visible = _filtered(analysis, serial)
     if not visible:
-        st.info("No cuts match these filters.")
+        st.info("No cuts match. Open Filters to broaden the list.")
         return
     st.dataframe(
         _table_records(visible), hide_index=True, width="stretch", height=min(290, 42 + 36 * len(visible)),
@@ -642,7 +650,8 @@ def _audit_tab(analysis: BatchAnalysis) -> None:
     a.download_button("Run ledger JSON", json_document(ledger), "run_ledger.json", "application/json", on_click="ignore")
     b.download_button("Review flags Markdown", analysis.audit, "failures_and_flags.md", "text/markdown", on_click="ignore")
     files = ledger["inputs"]["files"]
-    with st.expander("Input coverage", expanded=True):
+    with st.container(border=True):
+        st.markdown("#### Input coverage")
         st.dataframe([
             {
                 "File": entry["filename"], "Episode": entry["episode_number"], "Status": entry["status"],
@@ -653,7 +662,8 @@ def _audit_tab(analysis: BatchAnalysis) -> None:
         for entry in files:
             for issue in entry["issues"]:
                 st.text(f'{entry["filename"]} · line {issue["line"] or "—"} · {issue["message"]}')
-    with st.expander("Stitch and recap checks"):
+    with st.expander("Recap checks and model usage"):
+        st.markdown("#### Stitch and recap checks")
         entries = ledger["stitch_search"]
         if entries:
             st.dataframe([
@@ -666,7 +676,7 @@ def _audit_tab(analysis: BatchAnalysis) -> None:
             ], hide_index=True, width="stretch")
         else:
             st.caption("This run has no consecutive episode pairs.")
-    with st.expander("Model usage"):
+        st.markdown("#### Model usage")
         usage = ledger["model_usage"]
         st.text(f'{usage["requests"]} requests · {usage["input_tokens"]:,} input tokens · {usage["output_tokens"]:,} output tokens')
         for item in ledger.get("judge", {}).get("evaluations", []):
