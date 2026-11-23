@@ -1,99 +1,180 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="744" viewBox="0 0 1200 744" role="img" aria-labelledby="title description">
-  <title id="title">How BeatLedger works</title>
-  <desc id="description">Parse timestamped screenplays, find and verify cuts, score them offline, optionally validate model judgments, then rank, review and export them. Offline runs skip the model stage. Unusable judgments keep the baseline score.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1390" viewBox="0 0 1200 1390" role="img" aria-labelledby="title description">
+  <title id="title">How BeatLedger finds and ranks promo cuts</title>
+  <desc id="description">BeatLedger verifies screenplay cuts, finds eligible hook and ending beats, and computes a baseline. The model is the primary scorer when judging is available and its reply passes validation. Failed or unjudged cuts retain their baseline. Editors inspect, trim, review, and export the cuts.</desc>
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#247568"/>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#287b6e"/>
+    </marker>
+    <marker id="fallback-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#9b6320"/>
     </marker>
   </defs>
   <style>
     text { font-family: 'Segoe UI', Arial, sans-serif; }
-    .stage { font-size: 17px; font-weight: 700; fill: #23665c; letter-spacing: 1px; }
-    .title { font-size: 25px; font-weight: 700; fill: #14323a; }
+    .stage { font-size: 17px; font-weight: 700; fill: #226b60; letter-spacing: 1.1px; }
+    .title { font-size: 26px; font-weight: 700; fill: #14323a; }
     .body { font-size: 19px; fill: #29434a; }
-    .note { font-size: 16px; font-weight: 600; fill: #295b54; }
-    .card { fill: #fff; stroke: #bfd8d2; stroke-width: 1.5; }
-    .model { fill: #eef4fc; stroke: #bfd0e5; stroke-width: 1.5; }
-    .arrow { fill: none; stroke: #247568; stroke-width: 2.5; stroke-linejoin: round; marker-end: url(#arrow); }
+    .small { font-size: 17px; fill: #37605f; }
+    .strong { font-weight: 700; }
+    .card { fill: #fff; stroke: #c6dbd6; stroke-width: 1.5; }
+    .model { fill: #eaf5f2; stroke: #9bc9be; stroke-width: 1.5; }
+    .fallback { fill: #fff4df; stroke: #dec18c; stroke-width: 1.5; }
+    .arrow { fill:none; stroke:#287b6e; stroke-width:2.5; stroke-linejoin:round; marker-end:url(#arrow); }
+    .branch { fill:none; stroke:#9b6320; stroke-width:2.5; stroke-dasharray:6 5; stroke-linejoin:round; marker-end:url(#fallback-arrow); }
+    .rule { fill:none; stroke:#bdd2cd; stroke-width:1.5; }
   </style>
 
-  <rect width="1200" height="744" rx="18" fill="#f1f6f4"/>
-  <rect width="1200" height="104" rx="18" fill="#12363b"/>
-  <path d="M0 87h1200v17H0z" fill="#12363b"/>
-  <rect x="34" y="24" width="5" height="55" rx="2" fill="#6ed0b6"/>
-  <text x="55" y="52" font-size="34" font-weight="700" fill="#fff">From screenplay to promo shortlist</text>
-  <text x="56" y="78" font-size="18" fill="#c8eee4">BeatLedger verifies every cut against its source timecodes.</text>
+  <rect width="1200" height="1390" rx="20" fill="#f2f7f5"/>
+  <rect width="1200" height="111" rx="20" fill="#12363b"/>
+  <path d="M0 90h1200v21H0z" fill="#12363b"/>
+  <rect x="35" y="27" width="5" height="58" rx="2" fill="#75d2ba"/>
+  <text x="55" y="53" font-size="35" font-weight="700" fill="#fff">How BeatLedger finds and ranks a promo cut</text>
+  <text x="56" y="83" font-size="19" fill="#c6ebe3">Verify the edit points, judge the story, and keep a source trail for the editor.</text>
 
-  <text class="stage" x="34" y="135">1 · BUILD THE SHORTLIST</text>
-  <rect class="card" x="34" y="149" width="350" height="140" rx="13"/>
-  <rect class="card" x="412" y="149" width="350" height="140" rx="13"/>
-  <rect class="card" x="790" y="149" width="350" height="140" rx="13"/>
-  <path class="arrow" d="M385 219H405"/>
-  <path class="arrow" d="M763 219H783"/>
-  <text class="title" x="53" y="182">Read the screenplay</text>
-  <text class="body" x="53" y="210">
-    <tspan x="53">Load sample or uploaded .txt scripts.</tspan>
-    <tspan x="53" dy="24">Parse timed beats with their episode,</tspan>
-    <tspan x="53" dy="24">beat ID and source line.</tspan>
-  </text>
-  <text class="title" x="431" y="182">Find and verify cuts</text>
-  <text class="body" x="431" y="210">
-    <tspan x="431">Find continuous cuts and stitches.</tspan>
-    <tspan x="431" dy="24">Check recaps and near duplicates.</tspan>
-    <tspan x="431" dy="24">Verify dialogue-safe 20–60 s cuts.</tspan>
-  </text>
-  <text class="title" x="809" y="182">Score every cut offline</text>
-  <text class="body" x="809" y="210">
-    <tspan x="809">Hook 35% · Cliffhanger 30%</tspan>
-    <tspan x="809" dy="24">Clarity 25% · Drama 10%</tspan>
-    <tspan x="809" dy="24">Apply timing deductions.</tspan>
-  </text>
+  <text class="stage" x="34" y="143">1 · FROM SCREENPLAY TO VERIFIED CUT</text>
+  <g data-card="34 349">
+    <rect class="card" x="34" y="159" width="349" height="135" rx="13"/>
+    <text class="title" x="53" y="193">Parse timed beats</text>
+    <text class="body" x="53" y="220">
+      <tspan x="53">Read action, dialogue and camera</tspan>
+      <tspan x="53" dy="24">beats. Keep the episode, source line,</tspan>
+      <tspan x="53" dy="24">beat ID and exact source clock.</tspan>
+    </text>
+  </g>
+  <path class="arrow" d="M384 226H399"/>
+  <g data-card="410 359">
+    <rect class="card" x="410" y="159" width="359" height="135" rx="13"/>
+    <text class="title" x="429" y="193">Search two cut types</text>
+    <text class="body" x="429" y="220">
+      <tspan x="429">Keep up to three continuous cuts</tspan>
+      <tspan x="429" dy="24">per episode and one stitch per pair.</tspan>
+      <tspan x="429" dy="24">Skip confirmed recaps at the join.</tspan>
+    </text>
+  </g>
+  <path class="arrow" d="M770 226H785"/>
+  <g data-card="796 370">
+    <rect class="card" x="796" y="159" width="370" height="135" rx="13"/>
+    <text class="title" x="815" y="193">Verify the boundaries</text>
+    <text class="body" x="815" y="220">
+      <tspan x="815">Check 20–60 seconds total and keep</tspan>
+      <tspan x="815" dy="24">dialogue intact. Suppress continuous</tspan>
+      <tspan x="815" dy="24">cuts with a shared hook or ≥75% IoU.</tspan>
+    </text>
+  </g>
 
-  <text class="stage" x="34" y="323">2 · ADD OPTIONAL MODEL JUDGMENTS</text>
-  <path class="arrow" d="M965 290V332"/>
-  <text class="note" x="977" y="317">Model enabled</text>
-  <path class="arrow" d="M1141 219H1166V523H318V552" stroke-dasharray="7 6"/>
-  <rect class="model" x="790" y="338" width="350" height="145" rx="13"/>
-  <rect class="model" x="412" y="338" width="350" height="145" rx="13"/>
-  <rect class="model" x="34" y="338" width="350" height="145" rx="13"/>
-  <path class="arrow" d="M789 410H770"/>
-  <path class="arrow" d="M411 410H392"/>
-  <text class="title" x="809" y="371">Send selected excerpts</text>
-  <text class="body" x="809" y="399">
-    <tspan x="809">Send the cut's beats and timing,</tspan>
-    <tspan x="809" dy="24">plus IDs the model can cite as</tspan>
-    <tspan x="809" dy="24">opening and ending evidence.</tspan>
-  </text>
-  <text class="title" x="431" y="371">Validate the reply</text>
-  <text class="body" x="431" y="399">
-    <tspan x="431">Check the JSON fields and scores.</tspan>
-    <tspan x="431" dy="24">Match cited beats to the eligible</tspan>
-    <tspan x="431" dy="24">source windows for that cut.</tspan>
-  </text>
-  <text class="title" x="53" y="371">Use a score for each cut</text>
-  <text class="body" x="53" y="399">
-    <tspan x="53">Use validated scores and a bonus</tspan>
-    <tspan x="53" dy="24">for rising tension. Keep the baseline</tspan>
-    <tspan x="53" dy="24">when judging is skipped or fails.</tspan>
-  </text>
-  <path class="arrow" d="M318 484V552"/>
-  <rect x="748" y="509" width="303" height="27" rx="13" fill="#f1f6f4"/>
-  <text class="note" x="900" y="529" text-anchor="middle">Offline mode keeps baseline scores</text>
+  <path class="arrow" d="M981 295V340"/>
+  <text class="stage" x="34" y="333">2 · HOW THE HOOK AND ENDING ARE FOUND</text>
+  <rect class="card" x="34" y="347" width="1132" height="102" rx="13"/>
+  <text class="small strong" x="54" y="375">Hook beat starts in the first 3 s</text>
+  <text class="small strong" x="1146" y="375" text-anchor="end">Ending beat finishes in the last 5 s</text>
+  <rect x="54" y="385" width="1092" height="13" rx="6" fill="#dce9e6"/>
+  <rect x="54" y="385" width="91" height="13" rx="6" fill="#58a997"/>
+  <rect x="994.3" y="385" width="151.7" height="13" rx="6" fill="#d5a254"/>
+  <text class="small" x="54" y="424">00:00</text>
+  <text class="small" x="145" y="424" text-anchor="middle">00:03</text>
+  <text class="small" x="600" y="424" text-anchor="middle">Example · 36-second cut from the bundled sample</text>
+  <text class="small" x="994.3" y="424" text-anchor="middle">00:31</text>
+  <text class="small" x="1146" y="424" text-anchor="end">00:36</text>
 
-  <text class="stage" x="34" y="541">3 · REVIEW AND EXPORT</text>
-  <rect class="card" x="34" y="560" width="535" height="150" rx="13"/>
-  <rect class="card" x="597" y="560" width="543" height="150" rx="13"/>
-  <path class="arrow" d="M570 635H590"/>
-  <text class="title" x="53" y="593">Rank and review</text>
-  <text class="body" x="53" y="621">
-    <tspan x="53">Rank the cuts and flag ones for manual review.</tspan>
-    <tspan x="53" dy="24">Read the full excerpt, preview and verify a trim,</tspan>
-    <tspan x="53" dy="24">then save an editorial decision for the current range.</tspan>
-  </text>
-  <text class="title" x="616" y="593">Export the run and decisions</text>
-  <text class="body" x="616" y="621">
-    <tspan x="616">Ranked CSV and JSON carry cuts and evidence.</tspan>
-    <tspan x="616" dy="24">Review decisions JSON carries notes and trims.</tspan>
-    <tspan x="616" dy="24">Run audit shows coverage, model usage and flags.</tspan>
-  </text>
+  <g data-card="34 552">
+    <rect class="card" x="34" y="462" width="552" height="248" rx="13"/>
+    <text class="title" x="54" y="498">Find the opening hook</text>
+    <text class="body" x="54" y="530">
+      <tspan x="54">Look for threats, confrontations, secrets or demands</tspan>
+      <tspan x="54" dy="24">in eligible dialogue and action. Questions and emphasis</tspan>
+      <tspan x="54" dy="24">can help. Prefer a payoff by 3 s and break ties</tspan>
+      <tspan x="54" dy="24">in favor of the earlier beat.</tspan>
+    </text>
+    <path class="rule" d="M54 622H566"/>
+    <text class="small strong" x="54" y="650">BASELINE EXAMPLE · EPISODE 101 · 00:00–00:02</text>
+    <text class="body" x="54" y="679">“Nora grabs an unsigned letter.” → 7/10</text>
+    <text class="small" x="54" y="700">2 base + 3 confrontation cue + 1 action + 1 within 3 s</text>
+  </g>
+  <g data-card="614 552">
+    <rect class="card" x="614" y="462" width="552" height="248" rx="13"/>
+    <text class="title" x="634" y="498">Find the ending beat</text>
+    <text class="body" x="634" y="530">
+      <tspan x="634">Look for a demand, consequence or open question.</tspan>
+      <tspan x="634" dy="24">Reward a question at the final dialogue and a beat</tspan>
+      <tspan x="634" dy="24">close to the cut edge. Deduct for an earlier question</tspan>
+      <tspan x="634" dy="24">or explicit resolution. A later end breaks a tie.</tspan>
+    </text>
+    <path class="rule" d="M634 622H1146"/>
+    <text class="small strong" x="634" y="650">BASELINE EXAMPLE · EPISODE 101 · 00:33–00:36</text>
+    <text class="body" x="634" y="679">“You must open the vault tonight!” → 8/10</text>
+    <text class="small" x="634" y="700">2 base + 3 demand cue + 1 emphasis + 1 dialogue + 1 at edge</text>
+  </g>
+  <text class="small" x="34" y="742">The rules also score clarity from context and intent, and drama from the share of story beats with dramatic cues.</text>
+
+  <path class="arrow" d="M567 753V788"/>
+  <text class="stage" x="34" y="780">3 · MODEL JUDGMENTS DRIVE THE FINAL RANKING</text>
+  <g data-card="34 552">
+    <rect class="model" x="34" y="796" width="552" height="144" rx="13"/>
+    <text class="title" x="54" y="830">Judge the verified excerpt</text>
+    <text class="body" x="54" y="860">
+      <tspan x="54">Send the cut’s beats, timing and eligible evidence IDs.</tspan>
+      <tspan x="54" dy="24">The model cites the opening and ending, rates hook,</tspan>
+      <tspan x="54" dy="24">cliffhanger and clarity (0–10), and reports tension.</tspan>
+      <tspan x="54" dy="22">It also labels the hook type and checks stitched joins.</tspan>
+    </text>
+  </g>
+  <path class="arrow" d="M587 865H606"/>
+  <g data-card="614 552">
+    <rect class="model" x="614" y="796" width="552" height="144" rx="13"/>
+    <text class="title" x="634" y="830">Check the model reply</text>
+    <text class="body" x="634" y="860">
+      <tspan x="634">Validate the JSON, ratings, cut ID and stitch judgment.</tspan>
+      <tspan x="634" dy="24">Both cited beats must belong to their eligible windows.</tspan>
+      <tspan x="634" dy="24">BeatLedger keeps the verified source timecodes.</tspan>
+    </text>
+  </g>
+  <path class="arrow" d="M744 941V961H310V982"/>
+  <path class="branch" d="M993 941V982"/>
+  <text class="small strong" x="347" y="957">Usable reply</text>
+  <text x="1005" y="969" font-size="17" font-weight="700" fill="#805017">Fallback</text>
+  <g data-card="34 552">
+    <rect class="model" x="34" y="990" width="552" height="105" rx="13"/>
+    <text class="title" x="54" y="1024">Use the model scores</text>
+    <text class="body" x="54" y="1054">
+      <tspan x="54">Use validated scores and cited beats. Keep rule-based</tspan>
+      <tspan x="54" dy="24">drama and recalculate timing from the cited beats.</tspan>
+    </text>
+  </g>
+  <g data-card="614 552">
+    <rect class="fallback" x="614" y="990" width="552" height="105" rx="13"/>
+    <text class="title" x="634" y="1024">Keep the baseline score</text>
+    <text class="body" x="634" y="1054">
+      <tspan x="634">Use it if the provider is unavailable, the reply fails</tspan>
+      <tspan x="634" dy="24">validation, or the cut falls outside the judge sample.</tspan>
+    </text>
+  </g>
+
+  <path d="M310 1096V1112H600 M890 1096V1112H600" fill="none" stroke="#287b6e" stroke-width="2.5"/>
+  <path class="arrow" d="M600 1112V1150"/>
+  <text class="stage" x="34" y="1143">4 · RANK, CHECK AND HAND OFF</text>
+  <g data-card="34 1132">
+    <rect class="card" x="34" y="1158" width="1132" height="98" rx="13"/>
+    <text class="title" x="54" y="1192">35% hook + 30% cliffhanger + 25% clarity + 10% drama</text>
+    <text class="body" x="54" y="1222">
+      <tspan x="54">Subtract 0.5 for a late hook payoff and 0.5 for an ending beat that leaves more than 2 s of tail.</tspan>
+      <tspan x="54" dy="25">For judged cuts, add 0.05 per point of rising tension, capped at +0.35.</tspan>
+    </text>
+  </g>
+  <g data-card="34 552">
+    <rect class="card" x="34" y="1270" width="552" height="96" rx="13"/>
+    <text class="title" x="54" y="1303">Review in the Workbench</text>
+    <text class="body" x="54" y="1331">
+      <tspan x="54">Check the excerpt, verify any trim, and save a decision.</tspan>
+      <tspan x="54" dy="24">Review holds and footage checks stay visible.</tspan>
+    </text>
+  </g>
+  <path class="arrow" d="M587 1318H606"/>
+  <g data-card="614 552">
+    <rect class="card" x="614" y="1270" width="552" height="96" rx="13"/>
+    <text class="title" x="634" y="1303">Export results and audit</text>
+    <text class="body" x="634" y="1331">
+      <tspan x="634">Ranked CSV/JSON, review decisions, and the run audit</tspan>
+      <tspan x="634" dy="24">preserve scores, source evidence and editorial changes.</tspan>
+    </text>
+  </g>
 </svg>
