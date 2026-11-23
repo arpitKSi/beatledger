@@ -1,0 +1,49 @@
+  #bl-tour-launch {
+    padding: .25rem 0;
+    background: transparent;
+    color: #12675d;
+    border: 0;
+    font: inherit;
+    font-size: .875rem;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+    cursor: pointer;
+  }
+  #bl-tour[hidden], #bl-tour [hidden] { display: none; }
+  #bl-tour { position: fixed; inset: 0; z-index: 2000000; pointer-events: none; font: 15px/1.45 system-ui, sans-serif; }
+  #bl-tour .bl-tour-spotlight {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid #369f8f;
+    border-radius: .65rem;
+    box-shadow: 0 0 0 200vmax rgb(15 38 44 / 44%);
+  }
+  #bl-tour .bl-tour-card {
+    position: absolute;
+    width: min(344px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 17px 18px 16px;
+    background: #fff;
+    color: #17343b;
+    border: 1px solid #bbd7d1;
+    border-radius: .75rem;
+    box-shadow: 0 10px 36px rgb(12 43 48 / 25%);
+    pointer-events: auto;
+  }
+  #bl-tour .bl-tour-heading, #bl-tour .bl-tour-actions {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  #bl-tour .bl-tour-step { color: #376862; font-size: 12px; font-weight: 700; }
+  #bl-tour h2 { margin: 7px 0; padding: 0; color: #17343b; font-size: 20px; line-height: 1.25; }
+  #bl-tour p { margin: 0 0 14px; color: #344e54; }
+  #bl-tour button {
+    background: #fff; color: #174f48; border: 1px solid #c7ddd8; border-radius: .42rem;
+    font: inherit; font-size: 13px; padding: 6px 12px; cursor: pointer;
+  }
+  #bl-tour button:disabled { opacity: .5; cursor: default; }
+  #bl-tour [data-tour-action="next"] { background: #12675d; color: #fff; border-color: #12675d; }
+  #bl-tour [data-tour-action="close"] { border: 0; padding: 0 5px; font-size: 21px; line-height: 1; }
+  #bl-tour [data-tour-action="skip"] { border: 0; margin-right: auto; padding-left: 0; }
+  #bl-tour button:focus-visible, #bl-tour-launch:focus-visible { outline: 2px solid #187d70; outline-offset: 3px; }
