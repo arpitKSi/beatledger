@@ -23,13 +23,17 @@ python -m streamlit run app.py --server.address 127.0.0.1
 
 ## How BeatLedger works
 
-![BeatLedger workflow from timed screenplays through verified cuts, optional model judging, editor review, and export](docs/workflow.svg)
+[![Detailed BeatLedger flowchart showing hook detection, ending evidence, model scoring and baseline fallback](docs/workflow.svg)](docs/workflow.svg)
 
 ## How cuts are selected
 
 The parser gives each beat an exact start and end in centiseconds and retains its source lines. Search considers dialogue-safe boundaries, removes near-duplicate alternatives, checks adjacent episodes for repeated openers, and keeps up to three continuous options per episode and one stitch per adjacent pair.
 
-The baseline uses screenplay cues for hook, cliffhanger, clarity, and drama. An optional judge scores eligible opening and ending evidence without choosing timestamps. Strict validation checks the evidence IDs and derives tension change from the two ratings. Scoring combines 35% hook, 30% cliffhanger, 25% clarity, and 10% drama, then applies timing deductions and at most +0.35 for escalating tension.
+- **Find the hook.** BeatLedger compares beats that start in the first three seconds. The baseline looks for threats, confrontations, reveals, demands, and questions. It rewards action or dialogue, emphasis, and a payoff within the window. Ties favor the earlier beat.
+- **Find the ending.** BeatLedger compares beats that finish in the last five seconds. The baseline rewards final questions and beats near the cut edge, and penalizes earlier questions and explicit resolutions. The model assesses what remains unresolved after the whole excerpt.
+- **Use model scores when usable.** The judge can choose different evidence beats within the same windows and score hook, cliffhanger, and clarity. BeatLedger checks the response and keeps the verified timecodes. The baseline ranks the shortlist initially and supplies the final score for candidates without a usable judgment.
+
+Scoring combines 35% hook, 30% cliffhanger, 25% clarity, and 10% rule-based drama. BeatLedger applies timing deductions and adds up to 0.35 points for escalating model-rated tension.
 
 The model can misunderstand the story even when its beat ID is valid. A stitch goes on review hold if the baseline rates the ending at most 6 and the judge rates it at least 8. Each judged cut shows its baseline rank and score for comparison. Editors confirm silent cuts against footage, and a revised cut requires a fresh review. Screenplay clocks and narrative scores need footage review before posting.
 
